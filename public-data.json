@@ -17,7 +17,7 @@
           "id": "entry-1788441280141",
           "date": "2026-09-03",
           "title": "C++ Memory Model, Lifetime, and Ownership",
-          "detail": "Studied the C++ memory model from a programmer's perspective, focusing on object lifetime and ownership rather than syntax.\n\nCovered:\n- Stack vs heap and automatic storage duration.\n- Difference between an object's scope and its lifetime.\n- Constructor and destructor behavior, including reverse destruction order.\n- How new allocates an object dynamically and how delete destroys and frees it.\n- Why returning a pointer or reference to a local object creates a dangling pointer/reference.\n- Difference between Foo, Foo*, and Foo&:\n  - Foo represents an object/value.\n  - Foo* stores an address and does not inherently imply ownership.\n  - Foo& is an alias to an existing object.\n- RAII: tying resource lifetime to the lifetime of an owning object.\n- unique_ptr and exclusive ownership.\n- Moving a unique_ptr transfers ownership instead of copying it.\n- raw pointers obtained from unique_ptr are non-owning observers and can become dangling.\n- shared_ptr and reference-counted shared ownership.\n- std::move does not move or destroy an object by itself; it enables move semantics.\n- Copy constructor vs move constructor.\n- A moved-from object still exists and its destructor still runs.\n\nHands-on experiment:\nA a;\nA b = a;\nA c = std::move(a);\n\nPredicted execution:\n1. Default constructor for a.\n2. Copy constructor for b.\n3. Move constructor for c.\n4. Destructors run in reverse construction order: c, b, a.\n\nKey mental model:\nA pointer/reference and the object it refers to have separate lifetimes. Ownership determines who is responsible for destroying a resource. An address may still exist after an object's lifetime ends, but accessing that address as the destroyed object is invalid.",
+          "detail": "Studied the C++ memory model from a programmer's perspective, focusing on object lifetime and ownership rather than syntax.\n\nCovered:\n- Stack vs heap and automatic storage duration.\n- Difference between an object's scope and its lifetime.\n- Constructor and destructor behavior, including reverse destruction order.\n- How new allocates an object dynamically and how delete destroys and frees it.\n- Why returning a pointer or reference to a local object creates a dangling pointer/reference.\n- Difference between Foo, Foo*, and Foo&:\n  - Foo represents an object/value.\n  - Foo* stores an address and does not inherently imply ownership.\n  - Foo& is an alias to an existing object.\n- RAII: tying resource lifetime to the lifetime of an owning object.\n- unique_ptr and exclusive ownership.\n- Moving a unique_ptr transfers ownership instead of copying it.\n- raw pointers obtained from unique_ptr are non-owning observers and can become dangling.\n- shared_ptr and reference-counted shared ownership.\n- std::move does not move or destroy an object by itself; it enables move semantics.\n- Copy constructor vs move constructor.\n- A moved-from object still exists and its destructor still runs.",
           "kind": "learned",
           "tags": [
             "c++",
@@ -27,6 +27,57 @@
             "raii",
             "smart-pointers",
             "systems"
+          ]
+        },
+        {
+          "id": "entry-1788445266304",
+          "date": "2026-09-03",
+          "title": "C++ Move Semantics",
+          "detail": "Studied C++ move semantics, focusing on how lvalues/rvalues, references, `std::move`, copy/move operations, and copy elision affect object lifetime, ownership, and performance.\n\n**Covered:**\n- lvalue and rvalue\n- lvalue reference `T&`\n- rvalue reference `T&&`\n- `const T&` and temporary lifetime extension\n- `std::move` as an rvalue/xvalue cast\n- copy constructor vs move constructor\n- copy assignment vs move assignment\n- moved-from objects and valid-but-unspecified state\n- `vector` copy vs move: allocation, ownership, complexity, and memory usage\n- copy elision\n- NRVO\n- why `return std::move(local)` can prevent NRVO\n- Rule of 5\n- Rule of 0\n- how member types determine a class's default copy/move behavior",
+          "kind": "learned",
+          "tags": [
+            "c++",
+            "move-semantics",
+            "lvalue",
+            "rvalue",
+            "std-move",
+            "copy-elision",
+            "nrvo",
+            "rule-of-zero",
+            "rule-of-five",
+            "ownership"
+          ]
+        },
+        {
+          "id": "entry-1788455798555",
+          "date": "2026-09-03",
+          "title": "Solved 1 codeforces problem",
+          "detail": "- Solved \"https://codeforces.com/contest/1418/problem/G\" rating 2500",
+          "kind": "learned",
+          "tags": [
+            "codeforces",
+            "cp",
+            "dsa"
+          ]
+        },
+        {
+          "id": "entry-1788458330511",
+          "date": "2026-09-04",
+          "title": "OS Fundamentals and Virtual Memory",
+          "detail": "Studied core OS fundamentals from the perspective of how a C++ program actually runs, focusing on processes, threads, virtual memory, kernel interaction, and observing real system behavior on Linux.\nCovered:\n- program vs process\n- process vs thread\n- what threads share vs keep private\n- isolated virtual address spaces between processes\n- virtual memory and physical memory\n- pages, physical frames, page tables, and page table entries\n- page faults and demand paging\n- valid page faults vs invalid memory access\n- user mode vs kernel mode\n- normal function calls vs system calls\n- blocking read() and thread sleeping/wakeup\n- mode switch vs context switch\n- thread context: registers, program counter, stack pointer\n- why each thread needs its own stack\n- malloc/new vs physical RAM allocation\n- allocator behavior using brk and mmap\n- traditional heap vs anonymous memory mappings\n- munmap and shrinking the heap with brk\n- allocation boundaries vs page-level OS protection\n- why out-of-bounds access may corrupt memory without immediately crashing\n- using strace to inspect openat, read, write, close, mmap, brk, and munmap\n- using /proc/<pid>/maps to inspect executable segments, shared libraries, anonymous mappings, heap, stack, and memory permissions\n- observing a large std::vector allocation as a separate anonymous memory mapping",
+          "kind": "learned",
+          "tags": [
+            "operating-systems",
+            "process",
+            "thread",
+            "virtual-memory",
+            "paging",
+            "page-fault",
+            "system-call",
+            "context-switch",
+            "linux",
+            "strace",
+            "memory-management"
           ]
         }
       ]
