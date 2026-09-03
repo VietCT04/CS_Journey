@@ -128,7 +128,6 @@ a { color: inherit; text-decoration: none; }
 .entry-topline { display: flex; align-items: center; gap: 9px; color: #686976; font-family: "SFMono-Regular", Consolas, monospace; font-size: 9px; letter-spacing: .1em; text-transform: uppercase; }
 .entry-date { color: #a29ab8; }
 .entry-kind { padding-left: 9px; border-left: 1px solid var(--line); }
-.entry-duration { display: inline-flex; align-items: center; gap: 4px; margin-left: auto; color: #666773; letter-spacing: .02em; text-transform: none; }
 .entry-copy h3 { margin: 9px 0 7px; color: #d8d5e1; font-size: 14px; font-weight: 520; letter-spacing: -.02em; }
 .entry-copy p { max-width: 670px; margin: 0; color: #7f7f8a; font-size: 12px; line-height: 1.68; }
 .entry-bottomline { display: flex; align-items: end; justify-content: space-between; gap: 15px; margin-top: 14px; }

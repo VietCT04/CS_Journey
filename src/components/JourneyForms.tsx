@@ -81,12 +81,11 @@ type EntryEditorProps = {
 };
 
 export function EntryEditor({ entry, onSave, onCancel }: EntryEditorProps) {
-  const [date, setDate] = useState(entry?.date ?? "NEW NOTE");
+  const [date, setDate] = useState(entry?.date ?? "");
   const [title, setTitle] = useState(entry?.title ?? "");
   const [detail, setDetail] = useState(entry?.detail ?? "");
   const [kind, setKind] = useState<TimelineEntry["kind"]>(entry?.kind ?? "learned");
   const [tags, setTags] = useState(entry?.tags.join(", ") ?? "");
-  const [duration, setDuration] = useState(entry?.duration ?? "");
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -97,7 +96,6 @@ export function EntryEditor({ entry, onSave, onCancel }: EntryEditorProps) {
       detail,
       kind,
       tags: splitTags(tags),
-      duration: duration || undefined,
     });
   }
 
@@ -106,7 +104,7 @@ export function EntryEditor({ entry, onSave, onCancel }: EntryEditorProps) {
       <div className="editor-form-grid editor-form-grid--entry">
         <label>
           <span>Date</span>
-          <Input value={date} onChange={(event) => setDate(event.target.value)} required />
+          <Input type="date" value={date} onChange={(event) => setDate(event.target.value)} required />
         </label>
         <label>
           <span>Type</span>
@@ -125,16 +123,10 @@ export function EntryEditor({ entry, onSave, onCancel }: EntryEditorProps) {
         <span>What happened</span>
         <Textarea value={detail} onChange={(event) => setDetail(event.target.value)} required />
       </label>
-      <div className="editor-form-grid editor-form-grid--entry">
-        <label>
-          <span>Tags</span>
-          <Input value={tags} onChange={(event) => setTags(event.target.value)} placeholder="systems, notes" />
-        </label>
-        <label>
-          <span>Time spent</span>
-          <Input value={duration} onChange={(event) => setDuration(event.target.value)} placeholder="45 min" />
-        </label>
-      </div>
+      <label>
+        <span>Tags</span>
+        <Input value={tags} onChange={(event) => setTags(event.target.value)} placeholder="systems, notes" />
+      </label>
       <div className="editor-actions">
         <Button size="sm" variant="primary" type="submit">
           {entry ? <Check size={14} /> : <Plus size={14} />} {entry ? "Save note" : "Add note"}
