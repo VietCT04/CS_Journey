@@ -17,7 +17,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { EntryEditor, NodeEditor } from "@/components/JourneyForms";
-import { formatEntryDate, type JourneyNode, type MajorNode, type MonthNode, type TimelineEntry } from "@/data/journey";
+import { formatEntryDate, formatMonthLabel, type JourneyNode, type MajorNode, type MonthNode, type TimelineEntry } from "@/data/journey";
 import { cn } from "@/lib/utils";
 
 type KnowledgeTimelineProps = {
@@ -119,7 +119,7 @@ function MonthNodeCard({
       <TimelineMarker type="month" active={open} />
       <div className="node-meta">
         <span className="node-index">{String(index + 1).padStart(2, "0")}</span>
-        <span>{node.dateLabel}</span>
+        <span>{formatMonthLabel(node.dateLabel)}</span>
         <span className="node-meta-rule" />
       </div>
       <div className="node-content">
@@ -186,7 +186,7 @@ function MajorNodeCard({ node, index, editable, onUpdateNode, onDeleteNode }: Ba
   return (
     <motion.article layout className="journey-node journey-node--major">
       <TimelineMarker type="major" active={open} />
-      <div className="node-meta node-meta--major"><span className="node-index">{String(index + 1).padStart(2, "0")}</span><span>{node.dateLabel}</span><span className="node-meta-rule" /></div>
+      <div className="node-meta node-meta--major"><span className="node-index">{String(index + 1).padStart(2, "0")}</span><span>{formatMonthLabel(node.dateLabel)}</span><span className="node-meta-rule" /></div>
       <div className="node-content major-content">
         <div className="major-card">
           <div className="major-orb major-orb--one" />

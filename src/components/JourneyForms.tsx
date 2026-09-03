@@ -3,7 +3,7 @@ import { Check, Plus, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import type { JourneyNode, TimelineEntry } from "@/data/journey";
+import { toMonthInputValue, type JourneyNode, type TimelineEntry } from "@/data/journey";
 
 type NodeEditorProps = {
   node: JourneyNode;
@@ -13,14 +13,14 @@ type NodeEditorProps = {
 
 export function NodeEditor({ node, onSave, onCancel }: NodeEditorProps) {
   const [title, setTitle] = useState(node.title);
-  const [dateLabel, setDateLabel] = useState(node.dateLabel);
+  const [dateLabel, setDateLabel] = useState(toMonthInputValue(node.dateLabel));
   const [summary, setSummary] = useState(node.summary);
   const [secondary, setSecondary] = useState(node.kind === "month" ? node.focus : node.detail);
   const [tags, setTags] = useState(node.kind === "major" ? node.tags.join(", ") : "");
 
   useEffect(() => {
     setTitle(node.title);
-    setDateLabel(node.dateLabel);
+    setDateLabel(toMonthInputValue(node.dateLabel));
     setSummary(node.summary);
     setSecondary(node.kind === "month" ? node.focus : node.detail);
     setTags(node.kind === "major" ? node.tags.join(", ") : "");
@@ -40,8 +40,8 @@ export function NodeEditor({ node, onSave, onCancel }: NodeEditorProps) {
     <form className="inline-editor" onSubmit={handleSubmit}>
       <div className="editor-form-grid">
         <label>
-          <span>Display date</span>
-          <Input value={dateLabel} onChange={(event) => setDateLabel(event.target.value)} />
+          <span>Month</span>
+          <Input type="month" value={dateLabel} onChange={(event) => setDateLabel(event.target.value)} required />
         </label>
         <label>
           <span>Title</span>
