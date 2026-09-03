@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Download, Eye, FileJson, Menu, PanelLeftClose, Plus, Radio } from "lucide-react";
+import { AlertCircle, CheckCircle2, Eye, FileJson, LoaderCircle, Menu, PanelLeftClose, Plus, Radio, Save } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { SidebarProvider } from "@/components/ui/sidebar";
@@ -8,12 +8,12 @@ import { KnowledgeTimeline } from "@/components/KnowledgeTimeline";
 import { createId } from "@/lib/utils";
 import { initialJourney, type JourneyData, type JourneyNode, type TimelineEntry } from "@/data/journey";
 
-const STORAGE_KEY = "cs-journey-data-v1";
-
 export default function App() {
   const [path, setPath] = useState(window.location.pathname);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
-  const [journey, setJourney] = useState<JourneyData>(() => readStoredJourney());
+  const [journey, setJourney] = useState<JourneyData>(initialJourney);
+  const [dataStatus, setDataStatus] = useState<"loading" | "ready" | "error">("loading");
+  const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "saved" | "error">("idle");
   const isAdmin = path.startsWith("/admin");
 
   useEffect(() => {
@@ -23,8 +23,26 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(journey));
-  }, [journey]);
+    let active = true;
+    fetch("/public-data.json", { cache: "no-store" })
+      .then((response) => {
+        if (!response.ok) throw new Error(`Could not load public-data.json (${response.status})`);
+        return response.json() as Promise<JourneyData>;
+      })
+      .then((nextJourney) => {
+        if (!nextJourney?.profile || !Array.isArray(nextJourney.nodes)) throw new Error("Invalid journey data");
+        if (active) {
+          setJourney(nextJourney);
+          setDataStatus("ready");
+        }
+      })
+      .catch(() => {
+        if (active) setDataStatus("error");
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const entryCount = useMemo(() => journey.nodes.reduce((total, node) => total + (node.kind === "month" ? node.entries.length : 0), 0), [journey.nodes]);
 
@@ -64,14 +82,21 @@ export default function App() {
     setJourney((current) => ({ ...current, nodes: current.nodes.map((node) => node.id === nodeId && node.kind === "month" ? { ...node, entries: node.entries.filter((entry) => entry.id !== entryId) } : node) }));
   }
 
-  function exportData() {
-    const blob = new Blob([JSON.stringify(journey, null, 2)], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const anchor = document.createElement("a");
-    anchor.href = url;
-    anchor.download = "public-data.json";
-    anchor.click();
-    URL.revokeObjectURL(url);
+  async function saveData() {
+    setSaveStatus("saving");
+    try {
+      const response = await fetch("/api/journey/save", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(journey),
+      });
+      const result = (await response.json().catch(() => null)) as { error?: string } | null;
+      if (!response.ok) throw new Error(result?.error ?? "Could not save public-data.json");
+      setSaveStatus("saved");
+      window.setTimeout(() => setSaveStatus((current) => current === "saved" ? "idle" : current), 2500);
+    } catch {
+      setSaveStatus("error");
+    }
   }
 
   return (
@@ -106,7 +131,7 @@ export default function App() {
 
             <section className="journey-intro-bar"><div><span className="section-kicker">01 / The journey</span><h2>Small notes. Bigger patterns.</h2></div><p>Scroll through the chapters. Open a month to see what made it into the notebook.</p></section>
 
-            {isAdmin && <section className="admin-toolbar" aria-label="Timeline editor controls"><div className="admin-toolbar-copy"><span className="admin-icon"><FileJson size={16} /></span><div><strong>Local editor</strong><span>Changes are saved locally and stay in this browser until exported.</span></div></div><div className="admin-toolbar-actions"><Button size="sm" variant="secondary" onClick={() => addNode("month")}><Plus size={14} /> Month</Button><Button size="sm" variant="secondary" onClick={() => addNode("major")}><Plus size={14} /> Major milestone</Button><Button size="sm" variant="primary" onClick={exportData}><Download size={14} /> Export public data</Button></div></section>}
+            {isAdmin && <section className="admin-toolbar" aria-label="Timeline editor controls"><div className="admin-toolbar-copy"><span className="admin-icon"><FileJson size={16} /></span><div><strong>Local editor</strong><span>Changes stay in memory until you save them to public-data.json.</span></div></div><div className="admin-toolbar-actions"><Button size="sm" variant="secondary" onClick={() => addNode("month")}><Plus size={14} /> Month</Button><Button size="sm" variant="secondary" onClick={() => addNode("major")}><Plus size={14} /> Major milestone</Button><Button size="sm" variant="primary" onClick={saveData} disabled={saveStatus === "saving" || dataStatus === "loading"}>{saveStatus === "saving" ? <LoaderCircle className="animate-spin" size={14} /> : saveStatus === "saved" ? <CheckCircle2 size={14} /> : saveStatus === "error" ? <AlertCircle size={14} /> : <Save size={14} />} {saveStatus === "saving" ? "Saving..." : saveStatus === "saved" ? "Saved to public-data.json" : saveStatus === "error" ? "Retry save" : "Save changes"}</Button></div></section>}
 
             <KnowledgeTimeline nodes={journey.nodes} editable={isAdmin} onUpdateNode={updateNode} onDeleteNode={deleteNode} onAddEntry={addEntry} onUpdateEntry={updateEntry} onDeleteEntry={deleteEntry} />
 
@@ -116,16 +141,4 @@ export default function App() {
       </div>
     </SidebarProvider>
   );
-}
-
-function readStoredJourney(): JourneyData {
-  try {
-    const stored = window.localStorage.getItem(STORAGE_KEY);
-    if (!stored) return initialJourney;
-    const parsed = JSON.parse(stored) as JourneyData;
-    if (!parsed?.profile || !Array.isArray(parsed.nodes)) return initialJourney;
-    return parsed;
-  } catch {
-    return initialJourney;
-  }
 }
