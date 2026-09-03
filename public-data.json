@@ -8,7 +8,7 @@
     {
       "kind": "month",
       "id": "2026-04-systems-thinking",
-      "dateLabel": "APR 2026",
+      "dateLabel": "2026-04",
       "title": "Deepening systems thinking",
       "summary": "Moving from isolated features to the forces that shape reliable systems.",
       "focus": "distributed systems · observability · trade-offs",
@@ -42,7 +42,7 @@
     {
       "kind": "major",
       "id": "major-first-design-note",
-      "dateLabel": "MAR 2026",
+      "dateLabel": "2026-03",
       "title": "First systems design note",
       "summary": "A deliberate pause to make the invisible decisions visible.",
       "detail": "I wrote the first end-to-end design note for a service instead of jumping straight into implementation. The artifact became a way to reason with other people, not just a record of what I already knew.",
@@ -51,7 +51,7 @@
     {
       "kind": "month",
       "id": "2026-02-runtime-fundamentals",
-      "dateLabel": "FEB 2026",
+      "dateLabel": "2026-02",
       "title": "Runtime fundamentals",
       "summary": "Making the machine underneath the application feel less mysterious.",
       "focus": "processes · memory · concurrency",
@@ -85,7 +85,7 @@
     {
       "kind": "month",
       "id": "2026-01-shipping-loop",
-      "dateLabel": "JAN 2026",
+      "dateLabel": "2026-01",
       "title": "Building a tighter shipping loop",
       "summary": "Less ceremony, more feedback, and smaller steps that actually reach users.",
       "focus": "testing · tooling · feedback loops",

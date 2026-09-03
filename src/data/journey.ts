@@ -21,6 +21,40 @@ export function formatEntryDate(value: string) {
   return `${String(day).padStart(2, "0")} ${monthLabels[month - 1]}`;
 }
 
+export function formatMonthLabel(value: string) {
+  const [year, month] = toMonthInputValue(value).split("-").map(Number);
+
+  if (year && month && month >= 1 && month <= 12) {
+    return `${monthLabels[month - 1]} ${year}`;
+  }
+
+  return value;
+}
+
+export function toMonthInputValue(value: string) {
+  if (/^\d{4}-\d{2}$/.test(value)) {
+    return value;
+  }
+
+  const legacyLabel = value.match(/^([A-Za-z]{3})\s+(\d{4})$/);
+  if (legacyLabel) {
+    const month = monthLabels.findIndex((label) => label === legacyLabel[1].toUpperCase()) + 1;
+    if (month > 0) {
+      return `${legacyLabel[2]}-${String(month).padStart(2, "0")}`;
+    }
+  }
+
+  const numericLabel = value.match(/^(\d{1,2})\/(\d{4})$/);
+  if (numericLabel) {
+    const month = Number(numericLabel[1]);
+    if (month >= 1 && month <= 12) {
+      return `${numericLabel[2]}-${String(month).padStart(2, "0")}`;
+    }
+  }
+
+  return "";
+}
+
 export type MonthNode = {
   kind: "month";
   id: string;
@@ -62,7 +96,7 @@ export const initialJourney: JourneyData = {
     {
       kind: "month",
       id: "2026-04-systems-thinking",
-      dateLabel: "APR 2026",
+      dateLabel: "2026-04",
       title: "Deepening systems thinking",
       summary:
         "Moving from isolated features to the forces that shape reliable systems.",
@@ -100,7 +134,7 @@ export const initialJourney: JourneyData = {
     {
       kind: "major",
       id: "major-first-design-note",
-      dateLabel: "MAR 2026",
+      dateLabel: "2026-03",
       title: "First systems design note",
       summary: "A deliberate pause to make the invisible decisions visible.",
       detail:
@@ -110,7 +144,7 @@ export const initialJourney: JourneyData = {
     {
       kind: "month",
       id: "2026-02-runtime-fundamentals",
-      dateLabel: "FEB 2026",
+      dateLabel: "2026-02",
       title: "Runtime fundamentals",
       summary:
         "Making the machine underneath the application feel less mysterious.",
@@ -148,7 +182,7 @@ export const initialJourney: JourneyData = {
     {
       kind: "month",
       id: "2026-01-shipping-loop",
-      dateLabel: "JAN 2026",
+      dateLabel: "2026-01",
       title: "Building a tighter shipping loop",
       summary:
         "Less ceremony, more feedback, and smaller steps that actually reach users.",
