@@ -7,7 +7,6 @@ import {
   Check,
   ChevronDown,
   CircleDot,
-  Clock3,
   Code2,
   GitBranch,
   Pencil,
@@ -18,7 +17,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { EntryEditor, NodeEditor } from "@/components/JourneyForms";
-import type { JourneyNode, MajorNode, MonthNode, TimelineEntry } from "@/data/journey";
+import { formatEntryDate, type JourneyNode, type MajorNode, type MonthNode, type TimelineEntry } from "@/data/journey";
 import { cn } from "@/lib/utils";
 
 type KnowledgeTimelineProps = {
@@ -261,7 +260,7 @@ function EntryCard({ entry, editable, editing, onEdit, onDelete, onSave, onCance
       <div className="entry-card">
         <div className={cn("entry-icon", `entry-icon--${entry.kind}`)}><Icon size={15} /></div>
         <div className="entry-copy">
-          <div className="entry-topline"><span className="entry-date">{entry.date}</span><span className="entry-kind">{entry.kind}</span>{entry.duration && <span className="entry-duration"><Clock3 size={12} /> {entry.duration}</span>}</div>
+          <div className="entry-topline"><span className="entry-date">{formatEntryDate(entry.date)}</span><span className="entry-kind">{entry.kind}</span></div>
           <h3>{entry.title}</h3>
           <p>{entry.detail}</p>
           <div className="entry-bottomline">

@@ -15,30 +15,27 @@
       "entries": [
         {
           "id": "entry-queue-backpressure",
-          "date": "28 APR",
+          "date": "2026-04-28",
           "title": "Queue backpressure, without the hand-waving",
           "detail": "Mapped the moment a healthy queue becomes a system-wide feedback loop. The useful shift was to reason from load, capacity, and failure mode together.",
           "kind": "learned",
-          "tags": ["distributed systems", "queues"],
-          "duration": "42 min"
+          "tags": ["distributed systems", "queues"]
         },
         {
           "id": "entry-tracing-contract",
-          "date": "22 APR",
+          "date": "2026-04-22",
           "title": "A tracing contract for future me",
           "detail": "Defined the smallest set of spans and attributes that would let me follow a request across service boundaries six months from now.",
           "kind": "built",
-          "tags": ["observability", "instrumentation"],
-          "duration": "1h 20m"
+          "tags": ["observability", "instrumentation"]
         },
         {
           "id": "entry-latency-budget",
-          "date": "14 APR",
+          "date": "2026-04-14",
           "title": "Latency is a product decision",
           "detail": "Turned a vague performance goal into a budget per dependency. It made a surprising number of technical debates much more concrete.",
           "kind": "reflection",
-          "tags": ["performance", "trade-offs"],
-          "duration": "18 min"
+          "tags": ["performance", "trade-offs"]
         }
       ]
     },
@@ -61,30 +58,27 @@
       "entries": [
         {
           "id": "entry-process-memory",
-          "date": "26 FEB",
+          "date": "2026-02-26",
           "title": "Following a process from fork to exit",
           "detail": "Revisited process creation and memory layout until the lifecycle felt visual instead of purely symbolic.",
           "kind": "learned",
-          "tags": ["operating systems", "processes"],
-          "duration": "1h 06m"
+          "tags": ["operating systems", "processes"]
         },
         {
           "id": "entry-race-condition",
-          "date": "18 FEB",
+          "date": "2026-02-18",
           "title": "The smallest race condition I could make",
           "detail": "Built a tiny reproducible race, then made it disappear with synchronization. The experiment was intentionally small enough to keep in my head.",
           "kind": "built",
-          "tags": ["concurrency", "debugging"],
-          "duration": "54 min"
+          "tags": ["concurrency", "debugging"]
         },
         {
           "id": "entry-memory-model",
-          "date": "07 FEB",
+          "date": "2026-02-07",
           "title": "Notes on memory ordering",
           "detail": "Collected the few memory-model ideas I keep reaching for and wrote them in language I would actually use during a code review.",
           "kind": "reflection",
-          "tags": ["memory", "c++"],
-          "duration": "31 min"
+          "tags": ["memory", "c++"]
         }
       ]
     },
@@ -98,21 +92,19 @@
       "entries": [
         {
           "id": "entry-fixture-tests",
-          "date": "29 JAN",
+          "date": "2026-01-29",
           "title": "Fixture-backed tests that explain themselves",
           "detail": "Reworked a handful of tests so their data tells the story of the behavior under test, rather than making the reader reconstruct it.",
           "kind": "built",
-          "tags": ["testing", "developer experience"],
-          "duration": "1h 14m"
+          "tags": ["testing", "developer experience"]
         },
         {
           "id": "entry-feedback-loop",
-          "date": "16 JAN",
+          "date": "2026-01-16",
           "title": "Shortening the feedback loop",
           "detail": "Removed one unnecessary handoff from my local workflow and measured the effect in minutes saved per iteration.",
           "kind": "reflection",
-          "tags": ["workflow", "tooling"],
-          "duration": "24 min"
+          "tags": ["workflow", "tooling"]
         }
       ]
     }
