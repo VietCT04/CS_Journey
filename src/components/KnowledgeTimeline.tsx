@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, LayoutGroup, motion, useScroll, useSpring } from "motion/react";
 import {
   ArrowUpRight,
@@ -255,6 +255,25 @@ type EntryCardProps = {
 
 function EntryCard({ entry, editable, editing, onEdit, onDelete, onSave, onCancel }: EntryCardProps) {
   const Icon = entry.kind === "built" ? Code2 : entry.kind === "reflection" ? GitBranch : BookOpen;
+  const descriptionRef = useRef<HTMLParagraphElement>(null);
+  const [descriptionExpanded, setDescriptionExpanded] = useState(false);
+  const [descriptionCanExpand, setDescriptionCanExpand] = useState(false);
+
+  useEffect(() => {
+    const description = descriptionRef.current;
+    if (!description) return;
+
+    const measureDescription = () => {
+      if (!descriptionExpanded) {
+        setDescriptionCanExpand(description.scrollHeight > description.clientHeight + 1);
+      }
+    };
+
+    measureDescription();
+    window.addEventListener("resize", measureDescription);
+    return () => window.removeEventListener("resize", measureDescription);
+  }, [descriptionExpanded, entry.detail]);
+
   return (
     <motion.div layout className="entry-wrap">
       <div className="entry-card">
@@ -262,7 +281,19 @@ function EntryCard({ entry, editable, editing, onEdit, onDelete, onSave, onCance
         <div className="entry-copy">
           <div className="entry-topline"><span className="entry-date">{formatEntryDate(entry.date)}</span><span className="entry-kind">{entry.kind}</span></div>
           <h3>{entry.title}</h3>
-          <p>{entry.detail}</p>
+          <p ref={descriptionRef} className={cn("entry-description", !descriptionExpanded && "entry-description--collapsed")}>
+            {entry.detail}
+          </p>
+          {descriptionCanExpand && (
+            <button
+              className="entry-description-toggle"
+              type="button"
+              aria-expanded={descriptionExpanded}
+              onClick={() => setDescriptionExpanded((value) => !value)}
+            >
+              {descriptionExpanded ? "Read less" : "Read more"}
+            </button>
+          )}
           <div className="entry-bottomline">
             <div className="tag-row">{entry.tags.map((tag) => <Badge key={tag}>{tag}</Badge>)}</div>
             {editable && <div className="entry-actions"><Button size="sm" variant="ghost" onClick={onEdit}><Pencil size={13} /> Edit</Button><Button size="sm" variant="ghost" onClick={onDelete}><Trash2 size={13} /></Button></div>}
