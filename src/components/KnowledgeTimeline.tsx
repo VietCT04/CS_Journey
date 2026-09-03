@@ -17,7 +17,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { EntryEditor, NodeEditor } from "@/components/JourneyForms";
-import { formatEntryDate, formatMonthLabel, type JourneyNode, type MajorNode, type MonthNode, type TimelineEntry } from "@/data/journey";
+import { formatEntryDate, formatMonthLabel, sortEntriesByDate, sortTimelineNodes, type JourneyNode, type MajorNode, type MonthNode, type TimelineEntry } from "@/data/journey";
 import { cn } from "@/lib/utils";
 
 type KnowledgeTimelineProps = {
@@ -57,7 +57,7 @@ export function KnowledgeTimeline({
       </div>
       <LayoutGroup id="knowledge-journey">
         <div className="timeline-list">
-          {nodes.map((node, index) =>
+          {sortTimelineNodes(nodes).map((node, index) =>
             node.kind === "month" ? (
               <MonthNodeCard
                 key={node.id}
@@ -113,6 +113,7 @@ function MonthNodeCard({
   const [editing, setEditing] = useState(false);
   const [editingEntryId, setEditingEntryId] = useState<string | null>(null);
   const [addingEntry, setAddingEntry] = useState(false);
+  const sortedEntries = sortEntriesByDate(node.entries);
 
   return (
     <motion.article layout className="journey-node journey-node--month">
@@ -153,7 +154,7 @@ function MonthNodeCard({
             <motion.div key="month-content" layout initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }} className="node-body">
               <div className="focus-line"><span className="focus-label">Focus</span><span>{node.focus}</span></div>
               <div className="entry-list">
-                {node.entries.map((entry) => (
+                {sortedEntries.map((entry) => (
                   <EntryCard
                     key={entry.id}
                     entry={entry}
