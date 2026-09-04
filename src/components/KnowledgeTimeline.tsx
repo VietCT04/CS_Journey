@@ -19,6 +19,7 @@ import { Button } from "@/components/ui/button";
 import { EntryEditor, NodeEditor } from "@/components/JourneyForms";
 import { formatEntryDate, formatMonthLabel, sortEntriesByDate, sortTimelineNodes, type JourneyNode, type MajorNode, type MonthNode, type TimelineEntry } from "@/data/journey";
 import { cn } from "@/lib/utils";
+import { parseRichTextDetail } from "@/lib/rich-text";
 
 type KnowledgeTimelineProps = {
   nodes: JourneyNode[];
@@ -256,7 +257,7 @@ type EntryCardProps = {
 
 function EntryCard({ entry, editable, editing, onEdit, onDelete, onSave, onCancel }: EntryCardProps) {
   const Icon = entry.kind === "built" ? Code2 : entry.kind === "reflection" ? GitBranch : BookOpen;
-  const descriptionRef = useRef<HTMLParagraphElement>(null);
+  const descriptionRef = useRef<HTMLDivElement>(null);
   const [descriptionExpanded, setDescriptionExpanded] = useState(false);
   const [descriptionCanExpand, setDescriptionCanExpand] = useState(false);
 
@@ -271,8 +272,13 @@ function EntryCard({ entry, editable, editing, onEdit, onDelete, onSave, onCance
     };
 
     measureDescription();
+    const resizeObserver = new ResizeObserver(measureDescription);
+    resizeObserver.observe(description);
     window.addEventListener("resize", measureDescription);
-    return () => window.removeEventListener("resize", measureDescription);
+    return () => {
+      resizeObserver.disconnect();
+      window.removeEventListener("resize", measureDescription);
+    };
   }, [descriptionExpanded, entry.detail]);
 
   return (
@@ -282,9 +288,15 @@ function EntryCard({ entry, editable, editing, onEdit, onDelete, onSave, onCance
         <div className="entry-copy">
           <div className="entry-topline"><span className="entry-date">{formatEntryDate(entry.date)}</span><span className="entry-kind">{entry.kind}</span></div>
           <h3>{entry.title}</h3>
-          <p ref={descriptionRef} className={cn("entry-description", !descriptionExpanded && "entry-description--collapsed")}>
-            {entry.detail}
-          </p>
+          <div ref={descriptionRef} className={cn("entry-description", !descriptionExpanded && "entry-description--collapsed")}>
+            {parseRichTextDetail(entry.detail).map((segment, index) =>
+              segment.type === "image" ? (
+                <img key={`${entry.id}-image-${index}`} src={segment.src} alt={segment.alt} />
+              ) : (
+                <span key={`${entry.id}-text-${index}`}>{segment.value}</span>
+              ),
+            )}
+          </div>
           {descriptionCanExpand && (
             <button
               className="entry-description-toggle"

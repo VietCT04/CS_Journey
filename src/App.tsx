@@ -14,7 +14,7 @@ export default function App() {
   const [journey, setJourney] = useState<JourneyData>(initialJourney);
   const [dataStatus, setDataStatus] = useState<"loading" | "ready" | "error">("loading");
   const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "saved" | "error">("idle");
-  const isAdmin = path.startsWith("/admin");
+  const isAdmin = import.meta.env.DEV && path.startsWith("/admin");
 
   useEffect(() => {
     const onPopState = () => setPath(window.location.pathname);
@@ -90,8 +90,9 @@ export default function App() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(journey),
       });
-      const result = (await response.json().catch(() => null)) as { error?: string } | null;
+      const result = (await response.json().catch(() => null)) as { error?: string; journey?: JourneyData } | null;
       if (!response.ok) throw new Error(result?.error ?? "Could not save public-data.json");
+      if (result?.journey) setJourney(result.journey);
       setSaveStatus("saved");
       window.setTimeout(() => setSaveStatus((current) => current === "saved" ? "idle" : current), 2500);
     } catch {
@@ -131,7 +132,7 @@ export default function App() {
 
             <section className="journey-intro-bar"><div><span className="section-kicker">01 / The journey</span><h2>Small notes. Bigger patterns.</h2></div><p>Scroll through the chapters. Open a month to see what made it into the notebook.</p></section>
 
-            {isAdmin && <section className="admin-toolbar" aria-label="Timeline editor controls"><div className="admin-toolbar-copy"><span className="admin-icon"><FileJson size={16} /></span><div><strong>Local editor</strong><span>Changes stay in memory until you save them to public-data.json.</span></div></div><div className="admin-toolbar-actions"><Button size="sm" variant="secondary" onClick={() => addNode("month")}><Plus size={14} /> Month</Button><Button size="sm" variant="secondary" onClick={() => addNode("major")}><Plus size={14} /> Major milestone</Button><Button size="sm" variant="primary" onClick={saveData} disabled={saveStatus === "saving" || dataStatus === "loading"}>{saveStatus === "saving" ? <LoaderCircle className="animate-spin" size={14} /> : saveStatus === "saved" ? <CheckCircle2 size={14} /> : saveStatus === "error" ? <AlertCircle size={14} /> : <Save size={14} />} {saveStatus === "saving" ? "Saving..." : saveStatus === "saved" ? "Saved to public-data.json" : saveStatus === "error" ? "Retry save" : "Save changes"}</Button></div></section>}
+            {isAdmin && <section className="admin-toolbar" aria-label="Timeline editor controls"><div className="admin-toolbar-copy"><span className="admin-icon"><FileJson size={16} /></span><div><strong>Local editor</strong><span>Save writes public-data.json and pasted images to public/uploads/.</span></div></div><div className="admin-toolbar-actions"><Button size="sm" variant="secondary" onClick={() => addNode("month")}><Plus size={14} /> Month</Button><Button size="sm" variant="secondary" onClick={() => addNode("major")}><Plus size={14} /> Major milestone</Button><Button size="sm" variant="primary" onClick={saveData} disabled={saveStatus === "saving" || dataStatus === "loading"}>{saveStatus === "saving" ? <LoaderCircle className="animate-spin" size={14} /> : saveStatus === "saved" ? <CheckCircle2 size={14} /> : saveStatus === "error" ? <AlertCircle size={14} /> : <Save size={14} />} {saveStatus === "saving" ? "Saving..." : saveStatus === "saved" ? "Saved to public-data.json" : saveStatus === "error" ? "Retry save" : "Save changes"}</Button></div></section>}
 
             <KnowledgeTimeline nodes={journey.nodes} editable={isAdmin} onUpdateNode={updateNode} onDeleteNode={deleteNode} onAddEntry={addEntry} onUpdateEntry={updateEntry} onDeleteEntry={deleteEntry} />
 
