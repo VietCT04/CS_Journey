@@ -55,6 +55,39 @@ export function toMonthInputValue(value: string) {
   return "";
 }
 
+function compareDescendingDate(a: number | null, b: number | null) {
+  if (a === b) return 0;
+  if (a === null) return 1;
+  if (b === null) return -1;
+  return b - a;
+}
+
+function monthSortValue(value: string) {
+  const [year, month] = toMonthInputValue(value).split("-").map(Number);
+  return year && month >= 1 && month <= 12 ? year * 100 + month : null;
+}
+
+function entrySortValue(value: string) {
+  const [year, month, day] = value.split("-").map(Number);
+  return year && month >= 1 && month <= 12 && day >= 1 && day <= 31
+    ? year * 10000 + month * 100 + day
+    : null;
+}
+
+export function sortTimelineNodes(nodes: JourneyNode[]) {
+  return nodes
+    .map((node, index) => ({ node, index }))
+    .sort((a, b) => compareDescendingDate(monthSortValue(a.node.dateLabel), monthSortValue(b.node.dateLabel)) || b.index - a.index)
+    .map(({ node }) => node);
+}
+
+export function sortEntriesByDate(entries: TimelineEntry[]) {
+  return entries
+    .map((entry, index) => ({ entry, index }))
+    .sort((a, b) => compareDescendingDate(entrySortValue(a.entry.date), entrySortValue(b.entry.date)) || b.index - a.index)
+    .map(({ entry }) => entry);
+}
+
 export type MonthNode = {
   kind: "month";
   id: string;
