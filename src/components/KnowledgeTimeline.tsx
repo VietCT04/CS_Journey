@@ -246,7 +246,7 @@ function EditorActions({ onEdit, onDelete }: { onEdit: () => void; onDelete: () 
   );
 }
 
-type EntryCardProps = {
+export type EntryCardProps = {
   entry: TimelineEntry;
   editable: boolean;
   editing: boolean;
@@ -256,7 +256,7 @@ type EntryCardProps = {
   onCancel: () => void;
 };
 
-function EntryCard({ entry, editable, editing, onEdit, onDelete, onSave, onCancel }: EntryCardProps) {
+export function EntryCard({ entry, editable, editing, onEdit, onDelete, onSave, onCancel }: EntryCardProps) {
   const Icon = entry.kind === "built" ? Code2 : entry.kind === "reflection" ? GitBranch : BookOpen;
   const descriptionRef = useRef<HTMLDivElement>(null);
   const [descriptionExpanded, setDescriptionExpanded] = useState(false);
