@@ -7,6 +7,7 @@ export type TimelineEntry = {
   detail: string;
   kind: EntryKind;
   tags: string[];
+  featured?: boolean;
 };
 
 const monthLabels = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
