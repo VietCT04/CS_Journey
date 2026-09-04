@@ -83,7 +83,11 @@ type RichTextEditorProps = {
 function RichTextEditor({ value, onChange }: RichTextEditorProps) {
   const editorRef = useRef<HTMLDivElement>(null);
   const lastValue = useRef(value);
-  const initialHtml = useRef(detailToEditorHtml(value));
+
+  useEffect(() => {
+    if (!editorRef.current) return;
+    editorRef.current.innerHTML = detailToEditorHtml(value);
+  }, []);
 
   useEffect(() => {
     if (!editorRef.current || value === lastValue.current) return;
@@ -173,7 +177,6 @@ function RichTextEditor({ value, onChange }: RichTextEditorProps) {
       onInput={syncValue}
       onPaste={handlePaste}
       suppressContentEditableWarning
-      dangerouslySetInnerHTML={{ __html: initialHtml.current }}
     />
   );
 }
