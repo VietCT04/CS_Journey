@@ -79,6 +79,60 @@
             "strace",
             "memory-management"
           ]
+        },
+        {
+          "id": "entry-1788504792655",
+          "date": "2026-09-04",
+          "title": "CPU Cache, Locality, and Memory Access Performance",
+          "detail": "[[image:/uploads/pasted-f51fd1c0dca3.png|Pasted image]]\n\nDescription / What Happened\nStudied how CPU caches affect real program performance and why memory access patterns can make two O(n) algorithms perform very differently. Explored cache organization, locality, cache misses, hardware prefetching, and memory latency, then validated the concepts through sequential, strided, and random-access benchmarks using chrono and Cachegrind.\nCovered\n- CPU memory hierarchy: L1 → L2 → L3 → RAM\n- L1I vs L1D\n- Cache lines, sets, ways, tags, and associativity\n- Address mapping: tag | index | offset\n- Direct-mapped, set-associative, and fully associative caches\n- Spatial locality and temporal locality\n- Compulsory, capacity, and conflict misses\n- Memory latency and cache miss costs\n- Sequential vs random memory access\n- Stride access patterns: 1, 2, 4, 16, 64\n- Cache-line utilization\n- Hardware prefetching and predictable access patterns\n- Working sets, eviction, and cache capacity\n- Blocking / tiling for improved locality\n- Stack and heap data sharing the same data-cache hierarchy\n- vector object vs dynamically allocated vector buffer\n- Large-array performance benchmarking with chrono\n- Comparing ns/access across sequential, strided, and random access\n- perf stat and WSL hardware PMU limitations\n- Cachegrind cache simulation\n- Reading I refs, I1 misses, LLi misses, D refs, D1 misses, LLd misses, and miss rates\n- Experimental observation that stride-1 reuses most of each cache line, while stride-16 and stride-64 approach one cache-line miss per useful array access\n- Why absolute miss count and miss probability per useful access are different metrics\n\n",
+          "kind": "learned",
+          "tags": [
+            "cpu-cache",
+            "cache-hierarchy",
+            "cache-line",
+            "locality",
+            "spatial-locality",
+            "temporal-locality",
+            "cache-miss",
+            "memory-latency",
+            "prefetching",
+            "memory-access",
+            "performance",
+            "cachegrind",
+            "profiling",
+            "blocking",
+            "tiling"
+          ]
+        },
+        {
+          "id": "entry-1788524910098",
+          "date": "2026-09-04",
+          "title": "ICPC Training \"The 2023 ICPC Asia Seoul Regional Contest\" (solved 9/12)",
+          "detail": "[[image:/uploads/pasted-15e70d1e0618.png|Pasted image]]",
+          "kind": "learned",
+          "tags": [
+            "dsa",
+            "icpc"
+          ]
+        },
+        {
+          "id": "entry-1788541805225",
+          "date": "2026-09-04",
+          "title": "Urgent Production Hotfix and Cross-Team Ownership",
+          "detail": "What Happened\nToday I was assigned an urgent production issue that was blocking data from being persisted and reflected in my manager’s manager-level dashboard. My manager trusted me with full ownership of the hotfix, from investigating the root cause and implementing the fix to representing our team while coordinating with QA, DevOps, and other stakeholders to move the PR through the release process.\nWhat made this particularly meaningful was the urgency and level of responsibility. A change would normally take more than two weeks to reach production, but because this issue was blocking important reporting, we had to bring the fix through review, validation, deployment, and production verification within the same day.\nThe technical issue itself involved multiple layers: fixing malformed LLM JSON handling, improving validation and retry behavior, diagnosing an unexpected AI Core OAuth 429 rate-limit problem, and correcting the concurrency model so OAuth tokens could be safely shared and cached across requests. I also had to make sure the solution was clean, well-tested, Sonar-compliant, and safe enough for an expedited production release.\nThe biggest takeaway was not only the technical work, but being trusted to own a high-impact production issue end to end. I had to make decisions quickly, communicate clearly with senior engineers and cross-functional teams, respond to review feedback, and remain accountable for the final production outcome. It gave me a much better understanding of what production ownership looks like when the issue is urgent and visible to senior stakeholders.",
+          "kind": "reflection",
+          "tags": [
+            "production",
+            "hotfix",
+            "ownership",
+            "incident",
+            "debugging",
+            "concurrency",
+            "ai-core",
+            "cross-team",
+            "reliability",
+            "engineering"
+          ]
         }
       ]
     }
