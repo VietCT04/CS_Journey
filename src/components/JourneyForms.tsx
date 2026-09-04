@@ -1,9 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Check, Plus, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toMonthInputValue, type JourneyNode, type TimelineEntry } from "@/data/journey";
+import { detailToEditorHtml, editorHtmlToDetail, fileToDataUrl } from "@/lib/rich-text";
 
 type NodeEditorProps = {
   node: JourneyNode;
@@ -74,6 +75,109 @@ export function NodeEditor({ node, onSave, onCancel }: NodeEditorProps) {
   );
 }
 
+type RichTextEditorProps = {
+  value: string;
+  onChange: (value: string) => void;
+};
+
+function RichTextEditor({ value, onChange }: RichTextEditorProps) {
+  const editorRef = useRef<HTMLDivElement>(null);
+  const lastValue = useRef(value);
+  const initialHtml = useRef(detailToEditorHtml(value));
+
+  useEffect(() => {
+    if (!editorRef.current || value === lastValue.current) return;
+    editorRef.current.innerHTML = detailToEditorHtml(value);
+    lastValue.current = value;
+  }, [value]);
+
+  function syncValue() {
+    if (!editorRef.current) return;
+    const nextValue = editorHtmlToDetail(editorRef.current);
+    lastValue.current = nextValue;
+    onChange(nextValue);
+  }
+
+  function getSelectionRange() {
+    const root = editorRef.current;
+    const selection = window.getSelection();
+    if (!root) return null;
+    if (selection && selection.rangeCount > 0 && root.contains(selection.anchorNode)) {
+      return selection.getRangeAt(0);
+    }
+
+    const range = document.createRange();
+    range.selectNodeContents(root);
+    range.collapse(false);
+    return range;
+  }
+
+  function insertText(text: string) {
+    const range = getSelectionRange();
+    if (!range) return;
+    range.deleteContents();
+    const textNode = document.createTextNode(text.replace(/\r\n?/g, "\n"));
+    range.insertNode(textNode);
+    range.setStartAfter(textNode);
+    range.collapse(true);
+    const selection = window.getSelection();
+    selection?.removeAllRanges();
+    selection?.addRange(range);
+  }
+
+  function insertImage(source: string, range: Range | null) {
+    const root = editorRef.current;
+    if (!root || !range) return;
+    root.focus();
+    range.deleteContents();
+    const image = document.createElement("img");
+    image.src = source;
+    image.alt = "Pasted image";
+    range.insertNode(image);
+    range.setStartAfter(image);
+    range.collapse(true);
+    const selection = window.getSelection();
+    selection?.removeAllRanges();
+    selection?.addRange(range);
+  }
+
+  async function handlePaste(event: React.ClipboardEvent<HTMLDivElement>) {
+    const imageItem = Array.from(event.clipboardData.items).find((item) => item.type.startsWith("image/"));
+    if (imageItem) {
+      event.preventDefault();
+      const file = imageItem.getAsFile();
+      const range = getSelectionRange();
+      if (file) {
+        insertImage(await fileToDataUrl(file), range);
+        syncValue();
+      }
+      return;
+    }
+
+    const text = event.clipboardData.getData("text/plain");
+    if (!text) return;
+    event.preventDefault();
+    insertText(text);
+    syncValue();
+  }
+
+  return (
+    <div
+      ref={editorRef}
+      className="rich-text-editor"
+      contentEditable
+      role="textbox"
+      aria-label="What happened"
+      aria-multiline="true"
+      data-placeholder="Write what happened, then paste images between the lines..."
+      onInput={syncValue}
+      onPaste={handlePaste}
+      suppressContentEditableWarning
+      dangerouslySetInnerHTML={{ __html: initialHtml.current }}
+    />
+  );
+}
+
 type EntryEditorProps = {
   entry?: TimelineEntry;
   onSave: (entry: TimelineEntry) => void;
@@ -89,6 +193,7 @@ export function EntryEditor({ entry, onSave, onCancel }: EntryEditorProps) {
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (!detail.trim()) return;
     onSave({
       id: entry?.id ?? `entry-${Date.now()}`,
       date,
@@ -121,7 +226,7 @@ export function EntryEditor({ entry, onSave, onCancel }: EntryEditorProps) {
       </label>
       <label>
         <span>What happened</span>
-        <Textarea value={detail} onChange={(event) => setDetail(event.target.value)} required />
+        <RichTextEditor value={detail} onChange={setDetail} />
       </label>
       <label>
         <span>Tags</span>
