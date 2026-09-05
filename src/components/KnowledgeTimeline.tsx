@@ -154,6 +154,19 @@ function MonthNodeCard({
         <AnimatePresence initial={false}>
           {open && (
             <motion.div key="month-content" layout initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }} className="node-body">
+              {editable && (
+                <AnimatePresence initial={false} mode="wait">
+                  {addingEntry ? (
+                    <motion.div key="add-entry-editor" initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.2 }} className="editor-wrap editor-wrap--entry editor-wrap--entry-top">
+                      <EntryEditor onSave={(entry) => { onAddEntry(node.id, entry); setAddingEntry(false); }} onCancel={() => setAddingEntry(false)} />
+                    </motion.div>
+                  ) : (
+                    <motion.button key="add-entry-trigger" initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -5 }} transition={{ duration: 0.18 }} type="button" className="add-entry-button add-entry-button--top" onClick={() => setAddingEntry(true)}>
+                      <Plus size={15} /> Add a note to this chapter
+                    </motion.button>
+                  )}
+                </AnimatePresence>
+              )}
               <div className="focus-line"><span className="focus-label">Focus</span><span>{node.focus}</span></div>
               <div className="entry-list">
                 {sortedEntries.map((entry) => (
@@ -169,11 +182,6 @@ function MonthNodeCard({
                   />
                 ))}
               </div>
-              {editable && (addingEntry ? (
-                <EntryEditor onSave={(entry) => { onAddEntry(node.id, entry); setAddingEntry(false); }} onCancel={() => setAddingEntry(false)} />
-              ) : (
-                <button className="add-entry-button" onClick={() => setAddingEntry(true)}><Plus size={15} /> Add a note to this chapter</button>
-              ))}
             </motion.div>
           )}
         </AnimatePresence>

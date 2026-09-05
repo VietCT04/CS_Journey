@@ -187,8 +187,16 @@ type EntryEditorProps = {
   onCancel: () => void;
 };
 
+function getTodayDateInputValue() {
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, "0");
+  const day = String(today.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
 export function EntryEditor({ entry, onSave, onCancel }: EntryEditorProps) {
-  const [date, setDate] = useState(entry?.date ?? "");
+  const [date, setDate] = useState(entry?.date ?? getTodayDateInputValue());
   const [title, setTitle] = useState(entry?.title ?? "");
   const [detail, setDetail] = useState(entry?.detail ?? "");
   const [kind, setKind] = useState<TimelineEntry["kind"]>(entry?.kind ?? "learned");
