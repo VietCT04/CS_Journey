@@ -134,6 +134,31 @@
             "engineering"
           ],
           "featured": true
+        },
+        {
+          "id": "entry-1788619691087",
+          "date": "2026-09-05",
+          "title": "Concurrency Fundamentals",
+          "detail": "[[image:/uploads/pasted-7551e045e5e5.png|Pasted image]]\n\nBuilt a complete mental model of basic concurrency in C++, starting from race conditions and critical sections, then moving through mutexes, atomics, CAS, contention, and deadlocks. Explored why ordinary x++ is unsafe across threads, how atomic read-modify-write operations differ, how CAS retry loops work, and how contention affects synchronization. Finished with a practical benchmark comparing a plain counter, a mutex-protected counter, and an atomic counter.\nCovered\n- Race conditions and data races\n- Critical sections\n- Why ordinary x++ is conceptually load → add → store\n- Lost updates caused by thread interleaving\n- std::mutex\n- Mutex ownership, blocking, and waiting\n- std::lock_guard and RAII-based unlocking\n- Atomic operations and std::atomic\n- Atomic read-modify-write operations\n- Difference between mutex synchronization and atomic operations\n- Atomicity vs thread preemption/context switching\n- Hardware implementations of atomic operations\n- Load-exclusive / store-exclusive\n- Exclusive reservations and retry loops\n- Compare-And-Swap / Compare-Exchange (CAS)\n- expected and desired semantics in CAS\n- CAS failure and retry behavior\n- compare_exchange_weak vs compare_exchange_strong\n- Spurious failure\n- Why weak CAS is useful inside retry loops\n- Contention on shared atomic variables\n- CAS retries under high contention\n- Deadlock and circular wait\n- Consistent lock ordering as a deadlock-avoidance technique\n- Counter experiment with 8 threads:\n  - Plain int: incorrect result due to data race\n  - mutex + int: correct result through serialized critical sections\n  - atomic<int>: correct result through atomic increments\n- Why benchmark results do not imply that atomics are universally faster than mutexes\n- Importance of considering contention when evaluating synchronization performance",
+          "kind": "built",
+          "tags": [
+            "concurrency",
+            "multithreading",
+            "race-condition",
+            "data-race",
+            "critical-section",
+            "mutex",
+            "atomic",
+            "cas",
+            "compare-exchange",
+            "lock-free",
+            "contention",
+            "deadlock",
+            "synchronization",
+            "thread-safety",
+            "cpp"
+          ],
+          "featured": false
         }
       ]
     }
