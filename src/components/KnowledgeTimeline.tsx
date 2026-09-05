@@ -8,6 +8,7 @@ import {
   ChevronDown,
   CircleDot,
   Code2,
+  Flame,
   GitBranch,
   Pencil,
   Plus,
@@ -245,7 +246,7 @@ function EditorActions({ onEdit, onDelete }: { onEdit: () => void; onDelete: () 
   );
 }
 
-type EntryCardProps = {
+export type EntryCardProps = {
   entry: TimelineEntry;
   editable: boolean;
   editing: boolean;
@@ -255,7 +256,7 @@ type EntryCardProps = {
   onCancel: () => void;
 };
 
-function EntryCard({ entry, editable, editing, onEdit, onDelete, onSave, onCancel }: EntryCardProps) {
+export function EntryCard({ entry, editable, editing, onEdit, onDelete, onSave, onCancel }: EntryCardProps) {
   const Icon = entry.kind === "built" ? Code2 : entry.kind === "reflection" ? GitBranch : BookOpen;
   const descriptionRef = useRef<HTMLDivElement>(null);
   const [descriptionExpanded, setDescriptionExpanded] = useState(false);
@@ -283,10 +284,11 @@ function EntryCard({ entry, editable, editing, onEdit, onDelete, onSave, onCance
 
   return (
     <motion.div layout className="entry-wrap">
-      <div className="entry-card">
+      <div className={cn("entry-card", entry.featured && "entry-card--highlight")}>
+        {entry.featured && <><span className="highlight-flame highlight-flame--halo" aria-hidden="true" /><span className="highlight-flame highlight-flame--licks" aria-hidden="true" /></>}
         <div className={cn("entry-icon", `entry-icon--${entry.kind}`)}><Icon size={15} /></div>
         <div className="entry-copy">
-          <div className="entry-topline"><span className="entry-date">{formatEntryDate(entry.date)}</span><span className="entry-kind">{entry.kind}</span></div>
+          <div className="entry-topline"><span className="entry-date">{formatEntryDate(entry.date)}</span><span className="entry-kind">{entry.kind}</span>{entry.featured && <span className="entry-featured-badge"><Flame size={11} /> Highlight</span>}</div>
           <h3>{entry.title}</h3>
           <div ref={descriptionRef} className={cn("entry-description", !descriptionExpanded && "entry-description--collapsed")}>
             {parseRichTextDetail(entry.detail).map((segment, index) =>

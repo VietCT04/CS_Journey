@@ -193,6 +193,7 @@ export function EntryEditor({ entry, onSave, onCancel }: EntryEditorProps) {
   const [detail, setDetail] = useState(entry?.detail ?? "");
   const [kind, setKind] = useState<TimelineEntry["kind"]>(entry?.kind ?? "learned");
   const [tags, setTags] = useState(entry?.tags.join(", ") ?? "");
+  const [featured, setFeatured] = useState(entry?.featured ?? false);
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -204,6 +205,7 @@ export function EntryEditor({ entry, onSave, onCancel }: EntryEditorProps) {
       detail,
       kind,
       tags: splitTags(tags),
+      featured,
     });
   }
 
@@ -235,6 +237,14 @@ export function EntryEditor({ entry, onSave, onCancel }: EntryEditorProps) {
         <span>Tags</span>
         <Input value={tags} onChange={(event) => setTags(event.target.value)} placeholder="systems, notes" />
       </label>
+      <div className="entry-featured-field">
+        <span className="entry-field-label">Presentation</span>
+        <label className="entry-featured-toggle">
+          <input type="checkbox" checked={featured} onChange={(event) => setFeatured(event.target.checked)} />
+          <span className="entry-featured-checkbox" aria-hidden="true" />
+          <span className="entry-featured-copy"><strong>Highlight this note</strong><small>Use the warm flame treatment for a featured entry.</small></span>
+        </label>
+      </div>
       <div className="editor-actions">
         <Button size="sm" variant="primary" type="submit">
           {entry ? <Check size={14} /> : <Plus size={14} />} {entry ? "Save note" : "Add note"}

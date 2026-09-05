@@ -7,6 +7,12 @@ export type TimelineEntry = {
   detail: string;
   kind: EntryKind;
   tags: string[];
+  featured?: boolean;
+};
+
+export type FeaturedEntry = {
+  entry: TimelineEntry;
+  source: MonthNode;
 };
 
 const monthLabels = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
@@ -86,6 +92,15 @@ export function sortEntriesByDate(entries: TimelineEntry[]) {
     .map((entry, index) => ({ entry, index }))
     .sort((a, b) => compareDescendingDate(entrySortValue(a.entry.date), entrySortValue(b.entry.date)) || b.index - a.index)
     .map(({ entry }) => entry);
+}
+
+export function getFeaturedEntries(nodes: JourneyNode[]): FeaturedEntry[] {
+  return sortTimelineNodes(nodes).flatMap((node) => {
+    if (node.kind !== "month") return [];
+    return sortEntriesByDate(node.entries)
+      .filter((entry) => entry.featured)
+      .map((entry) => ({ entry, source: node }));
+  });
 }
 
 export type MonthNode = {

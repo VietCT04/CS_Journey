@@ -1,4 +1,4 @@
-import { BookOpen, ChevronRight, Command, Settings2, Sparkles } from "lucide-react";
+import { BookOpen, ChevronRight, Command, Flame, Settings2, Sparkles } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -12,12 +12,16 @@ import { Badge } from "@/components/ui/badge";
 
 type KnowledgeSidebarProps = {
   path: string;
+  editable: boolean;
   nodeCount: number;
   entryCount: number;
+  highlightCount: number;
 };
 
-export function KnowledgeSidebar({ path, nodeCount, entryCount }: KnowledgeSidebarProps) {
-  const isAdmin = path.startsWith("/admin");
+export function KnowledgeSidebar({ path, editable, nodeCount, entryCount, highlightCount }: KnowledgeSidebarProps) {
+  const isHighlights = path.includes("/highlights");
+  const knowledgeHref = editable ? "/admin" : "/knowledge";
+  const highlightsHref = editable ? "/admin/highlights" : "/highlights";
 
   return (
     <Sidebar>
@@ -37,9 +41,17 @@ export function KnowledgeSidebar({ path, nodeCount, entryCount }: KnowledgeSideb
         <div className="sidebar-section-label">Workspace</div>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton href="/knowledge" active={!isAdmin}>
+            <SidebarMenuButton href={knowledgeHref} active={!isHighlights}>
               <BookOpen size={17} />
               <span>Knowledge</span>
+              <ChevronRight className="sidebar-item-chevron" size={14} />
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+          <SidebarMenuItem>
+            <SidebarMenuButton href={highlightsHref} active={isHighlights}>
+              <Flame size={17} />
+              <span>Highlights</span>
+              <span className="sidebar-menu-count">{String(highlightCount).padStart(2, "0")}</span>
               <ChevronRight className="sidebar-item-chevron" size={14} />
             </SidebarMenuButton>
           </SidebarMenuItem>
@@ -69,7 +81,7 @@ export function KnowledgeSidebar({ path, nodeCount, entryCount }: KnowledgeSideb
         <div className="sidebar-section-label sidebar-section-label--spaced">Mode</div>
         <div className="sidebar-mode-note">
           <span className="mode-dot" />
-          {isAdmin ? "Local editor" : "Public read-only"}
+          {editable ? "Local editor" : "Public read-only"}
         </div>
       </SidebarContent>
 
