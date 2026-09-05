@@ -159,6 +159,15 @@
             "cpp"
           ],
           "featured": false
+        },
+        {
+          "id": "entry-1788623397826",
+          "date": "2026-09-05",
+          "title": "TEMP",
+          "detail": "Cache line ping-pong\n[[image:/uploads/pasted-25ebb755b797.png|Pasted image]]\nAlignas optimization\n[[image:/uploads/pasted-265acbe524c9.png|Pasted image]]\n\n",
+          "kind": "learned",
+          "tags": [],
+          "featured": false
         }
       ]
     }
