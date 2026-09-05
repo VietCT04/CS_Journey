@@ -163,10 +163,38 @@
         {
           "id": "entry-1788623397826",
           "date": "2026-09-05",
-          "title": "TEMP",
-          "detail": "Cache line ping-pong\n[[image:/uploads/pasted-25ebb755b797.png|Pasted image]]\nAlignas optimization\n[[image:/uploads/pasted-265acbe524c9.png|Pasted image]]\n\n",
+          "title": "False Sharing",
+          "detail": "Cache line ping-pong\n[[image:/uploads/pasted-25ebb755b797.png|Pasted image]]\nAlignas optimization\n[[image:/uploads/pasted-265acbe524c9.png|Pasted image]]\nStudied false sharing as a cache-coherence performance problem. Learned why two threads modifying completely different variables can still interfere when those variables share the same cache line. Traced the resulting cache-line invalidation and ownership ping-pong between CPU cores, then verified the effect experimentally by comparing adjacent atomics against cache-line-aligned atomics using alignas(64).\nCovered\n- False sharing\n- Cache coherence at cache-line granularity\n- Why different variables can still interfere\n- Cache-line ownership and invalidation\n- Cache-line ping-pong between CPU cores\n- Read-read sharing vs write-induced coherence traffic\n- Why one writer can affect another core reading a different variable\n- False sharing as a performance issue rather than a correctness issue\n- Why false sharing does not require threads to access the same variable\n- Cache-line alignment and padding\n- alignas(64)\n- Difference between aligning a whole struct and aligning individual members\n- Struct layout, member offsets, and compiler-inserted padding\n- Benchmarking two adjacent atomic<long> counters\n- Benchmark result before alignment: approximately 2.57 s\n- Benchmark result after separating counters onto different cache lines: approximately 0.66 s\n- Observed speedup of roughly 4×\n- Why cache-line separation removes unnecessary coherence traffic",
           "kind": "learned",
-          "tags": [],
+          "tags": [
+            "false-sharing",
+            "cache-coherence",
+            "cache-line",
+            "multithreading",
+            "concurrency",
+            "performance",
+            "memory-layout",
+            "alignment",
+            "padding",
+            "alignas",
+            "atomic",
+            "cache-invalidation",
+            "cache-line-ping-pong",
+            "cpp"
+          ],
+          "featured": false
+        },
+        {
+          "id": "entry-1788627069533",
+          "date": "2026-09-05",
+          "title": "NTU ICPC Training 2023 ICPC Southeastern Europe Regional Contest (The 2nd Universal Cup, Stage 14: Southeastern Europe)",
+          "detail": "[[image:/uploads/pasted-11ec5f182dea.png|Pasted image]]\n- Learned Dilworth's theorem\n\n",
+          "kind": "learned",
+          "tags": [
+            "icpc",
+            "cp",
+            "dsa"
+          ],
           "featured": false
         }
       ]
