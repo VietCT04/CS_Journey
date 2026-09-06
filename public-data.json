@@ -196,6 +196,31 @@
             "dsa"
           ],
           "featured": false
+        },
+        {
+          "id": "entry-1788667238306",
+          "date": "2026-09-06",
+          "title": "Assembly and Compiler Optimization",
+          "detail": "[[image:/uploads/pasted-eb0d9e5c3e8e.png|Pasted image]][[image:/uploads/pasted-85e03a354087.png|Pasted image]]Studied how C++ source code is transformed through the compiler pipeline into machine code executed by the CPU. Learned to read basic x86-64 assembly, understand register and memory operands, compare code generated at -O0, -O2, and -O3, and inspect machine code using objdump. Explored how compiler optimizations remove unnecessary variables, reduce memory traffic, transform loops, vectorize work with SIMD, and replace branches with conditional moves when profitable.\nCovered\n- Compiler pipeline: C++ → frontend → IR → optimization → machine code → CPU\n- Purpose of compiler optimization\n- Constant folding\n- Dead code elimination\n- Register allocation and removal of unnecessary stack traffic\n- -O0, -O2, and -O3\n- Basic x86-64 registers: rax, eax, rdi, rsi, rsp, rbp\n- Function arguments and return-value registers\n- Pointer and integer register widths\n- DWORD and QWORD\n- Memory operands and dereferencing with [register]\n- Addressing modes such as base + index * scale + offset\n- Basic instructions:\n  - mov\n  - lea\n  - add\n  - sub\n  - cmp\n  - test\n  - jmp\n  - je\n  - jne\n  - jl\n  - jle\n  - call\n  - ret\n  - cmov\n- CPU flags and conditional execution\n- Stack frames and frame pointers at -O0\n- Mapping local variables to stack slots\n- Reading a scalar sum loop at -O0\n- -O2 optimization:\n  - keeping the accumulator in a register\n  - eliminating the loop index variable\n  - transforming index-based iteration into pointer-based iteration\n- -O3 optimization:\n  - SIMD vectorization\n  - XMM registers\n  - processing four int values per iteration\n  - packed integer addition with paddd\n  - horizontal reduction of partial sums\n  - scalar tail handling for leftover elements\n- Branch vs branchless code\n- Conditional moves with cmov\n- Branch prediction and branch misprediction cost\n- Why different C++ syntax can compile to identical machine code\n- Observable behavior as the optimizer’s correctness constraint\n- objdump -d -M intel\n- Reading instruction offsets and machine-code bytes\n- Variable-length x86-64 instructions\n- Hexadecimal instruction offsets\n- Difference between compiler-generated assembly and disassembled object code\n",
+          "kind": "learned",
+          "tags": [
+            "assembly",
+            "compiler",
+            "compiler-optimization",
+            "x86-64",
+            "machine-code",
+            "registers",
+            "simd",
+            "vectorization",
+            "branch-prediction",
+            "branchless",
+            "cmov",
+            "objdump",
+            "performance",
+            "low-level",
+            "cpp"
+          ],
+          "featured": false
         }
       ]
     }
