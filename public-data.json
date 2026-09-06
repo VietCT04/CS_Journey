@@ -221,6 +221,34 @@
             "cpp"
           ],
           "featured": false
+        },
+        {
+          "id": "entry-1788707084260",
+          "date": "2026-09-06",
+          "title": "Cache Coherence, MESI/MOESI, and Contention",
+          "detail": "False Sharing experiment\n[[image:/uploads/pasted-faf57012bb83.png|Pasted image]]Studied how cache coherence works across multiple CPU cores and why shared writable cache lines can become expensive. Built a mental model around MESI/MOESI states, ownership transfer, invalidation, Read For Ownership, store buffers, and cache-line ping-pong. Connected these concepts to false sharing, atomic RMW operations, CPI, cache misses, and real performance measurements using perf stat.\nCovered\n- Private L1/L2 caches and shared LLC\n- Cache lines as the unit of coherence\n- Cache coherence vs memory consistency\n- MESI states:\n  - Modified\n  - Exclusive\n  - Shared\n  - Invalid\n- MOESI and the Owned state\n- Dirty vs clean cache lines\n- Exclusive ownership before writing\n- Read For Ownership (RFO)\n- Upgrade requests from Shared to Modified\n- Cache-line invalidation\n- Cache-to-cache ownership transfer\n- Why dirty data does not need to be written back to RAM before ownership moves\n- Store buffers\n- Store-to-load forwarding\n- Difference between:\n  - store execution\n  - global visibility\n  - cache-line ownership\n- False sharing vs true sharing\n- Why two independent variables can still contend when placed on the same cache line\n- Cache-line ping-pong\n- Why atomic RMW operations become expensive under contention\n- Why memory_order_relaxed does not remove coherence contention\n- Why atomic operations can still be slower without false sharing\n- alignas(64) and correct cache-line separation\n- Why aligning an array itself does not automatically separate array elements\n- Compiler/assembly connection:\n  - plain add\n  - lock add\n  - lock xadd\n- Same instruction count does not imply same runtime\n- CPI: cycles per instruction\n- Hardware stalls caused by coherence traffic\n- Cache miss count vs cache miss cost\n- Cache miss vs coherence transfer vs DRAM access\n- Sequential access vs random pointer chasing\n- Spatial locality\n- Hardware prefetching\n- Memory-level parallelism\n- Why predictable streaming misses can outperform fewer expensive misses\n- Hands-on false-sharing benchmark with perf stat\n- WSL limitation: hardware PMU events unavailable\n- Software-counter measurements:\n  - false sharing: ~2.51 s\n  - padded version: ~0.48 s\n  - roughly 5× speedup\n- Interpreting:\n  - task-clock\n  - context switches\n  - CPU migrations\n  - page faults\n- Why the benchmark strongly indicates coherence contention despite unavailable hardware coherence counters\n",
+          "kind": "learned",
+          "tags": [
+            "cache-coherence",
+            "MESI",
+            "MOESI",
+            "cache-line",
+            "false-sharing",
+            "true-sharing",
+            "atomic",
+            "RMW",
+            "store-buffer",
+            "RFO",
+            "ownership",
+            "invalidation",
+            "CPI",
+            "perf",
+            "memory-ordering",
+            "multicore",
+            "performance",
+            "cpp"
+          ],
+          "featured": false
         }
       ]
     }
