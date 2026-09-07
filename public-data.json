@@ -301,6 +301,28 @@
             "performance"
           ],
           "featured": false
+        },
+        {
+          "id": "entry-1788797026014",
+          "date": "2026-09-08",
+          "title": "std::vector Internals and Performance Reasoning",
+          "detail": "Studied the internal memory model of std::vector, including size, capacity, allocation, growth, reallocation, and pointer invalidation. Connected vector layout to CPU cache behavior and analyzed when contiguous storage can outperform pointer-based data structures despite less favorable insertion complexity.\nCovered\n- Conceptual std::vector layout: data pointer, size, and capacity\n- Contiguous dynamically allocated storage\n- Difference between size() and capacity()\n- reserve() vs resize()\n- reserve(N) guarantees capacity of at least N without creating elements\n- resize(N) changes the number of constructed elements\n- push_back() behavior with and without available capacity\n- emplace_back() and in-place element construction\n- Reallocation process: allocate → move/copy → destroy → free old storage\n- Pointer, reference, and iterator invalidation after reallocation\n- Geometric capacity growth\n- Why geometric growth gives amortized O(1) push_back()\n- Why linear +1 capacity growth leads to amortized O(N) insertion\n- resize() shrinking size without necessarily shrinking capacity\n- std::vector vs linked-list performance beyond Big-O\n- Spatial locality and contiguous memory\n- Hardware prefetching and cache-line utilization\n- Pointer chasing and cache-miss costs\n- Workload-driven data-structure selection\n- Traversal frequency vs insertion frequency\n- Element size and cache behavior\n- Pointer/reference stability as a design constraint\n- reserve() as a stability guarantee only when a strict upper bound is never exceeded\n- vector<unique_ptr<T>> as an indirection-based stable-address design\n- Trade-off between stable addresses and cache locality\n- Chunked/arena-style storage as an alternative design direction",
+          "kind": "learned",
+          "tags": [
+            "cpp",
+            "std-vector",
+            "memory",
+            "allocation",
+            "reallocation",
+            "amortized-complexity",
+            "cache-locality",
+            "prefetching",
+            "pointer-stability",
+            "data-structures",
+            "performance",
+            "systems-programming"
+          ],
+          "featured": false
         }
       ]
     }
