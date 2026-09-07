@@ -249,6 +249,58 @@
             "cpp"
           ],
           "featured": false
+        },
+        {
+          "id": "entry-1788786705383",
+          "date": "2026-09-07",
+          "title": "Networking Fundamentals and TCP Socket Programming",
+          "detail": "[[image:/uploads/pasted-e7869fd4eb46.png|Pasted image]]Studied the OS boundary of TCP networking, focusing on how a userspace application communicates with the kernel through socket file descriptors and networking syscalls. Built and tested a blocking TCP echo server in C++, then used strace on WSL/Linux to observe the actual socket, bind, listen, accept, recv, and send system calls.\nCovered\n- Networking path: application → socket API → syscall → kernel TCP stack → NIC/network\n- File descriptors and per-process fd tables\n- Kernel socket objects and socket metadata\n- socket(AF_INET, SOCK_STREAM, 0)\n- IPv4 and TCP stream socket concepts\n- bind() and local IP/port association\n- INADDR_ANY and port binding\n- listen() and listening sockets\n- accept() and connected sockets\n- Listening fd vs per-client connected fd\n- Blocking accept() and recv()\n- Kernel scheduling while a thread is blocked\n- TCP receive and send buffers\n- recv() return values: positive bytes, 0 for EOF, -1 for errors\n- send() success does not mean the receiver application received the data\n- TCP ACK vs application-level processing\n- Partial send() handling with a send loop\n- TCP as a byte stream with no message boundaries\n- Application-level framing requirement\n- Blocking vs non-blocking sockets\n- EAGAIN / EWOULDBLOCK\n- Busy polling and wasted CPU/syscall overhead\n- epoll readiness model\n- Why epoll is commonly combined with non-blocking sockets\n- Readiness race between epoll notification and recv()\n- Built a blocking C++ TCP echo server\n- Tested the server using netcat\n- Used strace -e trace=network to observe networking syscalls\n- Observed accept(3) = 4, confirming separate listening and connected sockets\n- Observed recvfrom(...)=6 and sendto(...)=6 for \"hello\\n\"\n- Observed recvfrom(...)=0 after client disconnect\n\n",
+          "kind": "learned",
+          "tags": [
+            "cpp",
+            "networking",
+            "tcp",
+            "sockets",
+            "linux",
+            "syscalls",
+            "file-descriptors",
+            "blocking-io",
+            "non-blocking-io",
+            "epoll",
+            "strace",
+            "wsl",
+            "tcp-server",
+            "echo-server",
+            "kernel",
+            "performance"
+          ],
+          "featured": false
+        },
+        {
+          "id": "entry-1788786809734",
+          "date": "2026-09-07",
+          "title": "C++ Memory Ordering and SPSC Ring Buffer",
+          "detail": "[[image:/uploads/pasted-71be9d74d2fd.png|Pasted image]]\nStudied the C++ memory model from atomicity through ordering, visibility, happens-before, relaxed ordering, release/acquire, and sequential consistency. Applied these concepts to build and reason about a lock-free SPSC ring buffer, including safe publication of non-atomic data, slot reuse, modification order, local producer/consumer state, and false-sharing avoidance. Finished by benchmarking the SPSC queue against `std::queue + mutex`.\n\nCovered\n\n- Atomicity vs ordering vs visibility\n- `sequenced-before`\n- `synchronizes-with`\n- `happens-before`\n- Data race vs logical race / stale observation\n- Why atomic objects can be race-free without providing cross-thread synchronization\n- `std::memory_order_relaxed`\n- Per-atomic modification order\n- Why relaxed operations preserve atomicity but not synchronization\n- `std::memory_order_release`\n- `std::memory_order_acquire`\n- Safe publication pattern with release/acquire\n- Why plain non-atomic payload data can still be race-free\n- Release publishes operations sequenced before it\n- Acquire protects operations sequenced after it\n- Why reversing publish-before-data order breaks correctness\n- `std::memory_order_seq_cst`\n- Single global total order for sequentially consistent operations\n- Why `r1 = 0, r2 = 0` is forbidden under `seq_cst` but allowed under `relaxed`\n- Difference between program order and cross-thread visibility\n- Relaxed atomic operations participating inside a larger happens-before chain\n- SPSC ring-buffer invariants\n- One producer owning the write side\n- One consumer owning the read side\n- Local non-atomic producer and consumer indices\n- Atomic published indices\n- `write_index` as producer-to-consumer publication\n- `read_index` as consumer-to-producer slot-reuse publication\n- Release/acquire synchronization in both directions\n- Why ring-buffer slots can remain plain non-atomic memory\n- Why SPSC correctness breaks with multiple producers\n- Need for atomic slot reservation in MPSC designs\n- False sharing between `write_index` and `read_index`\n- Cache-line separation with `alignas(64)`\n- Why weaker memory ordering does not remove atomic or coherence cost\n- `seq_cst` vs acquire/release performance considerations\n- Benchmark design and interpretation\n- `std::queue + mutex` benchmark:\n    - ~29.6M messages/sec\n    - ~33.82 ns/message\n- SPSC ring buffer benchmark:\n    - ~79.0M messages/sec\n    - ~12.66 ns/message\n- SPSC achieved approximately **2.67× higher throughput**\n- Why the benchmark does not isolate mutex cost alone\n- Why checksum validation matters in concurrent benchmarks",
+          "kind": "learned",
+          "tags": [
+            "cpp",
+            "memory-model",
+            "atomics",
+            "memory-ordering",
+            "happens-before",
+            "release-acquire",
+            "relaxed",
+            "seq-cst",
+            "lock-free",
+            "spsc",
+            "ring-buffer",
+            "false-sharing",
+            "cache-coherence",
+            "concurrency",
+            "benchmarking",
+            "performance"
+          ],
+          "featured": false
         }
       ]
     }
