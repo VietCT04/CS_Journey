@@ -3,7 +3,7 @@ import { Check, Plus, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { toMonthInputValue, type JourneyNode, type TimelineEntry } from "@/data/journey";
+import { formatWorkspaceKind, isWorkspaceKind, toMonthInputValue, type JourneyNode, type TimelineEntry, type WorkspaceOption } from "@/data/journey";
 import { detailToEditorHtml, editorHtmlToDetail, fileToDataUrl } from "@/lib/rich-text";
 
 type NodeEditorProps = {
@@ -183,6 +183,7 @@ function RichTextEditor({ value, onChange }: RichTextEditorProps) {
 
 type EntryEditorProps = {
   entry?: TimelineEntry;
+  workspaceOptions: WorkspaceOption[];
   onSave: (entry: TimelineEntry) => void;
   onCancel: () => void;
 };
@@ -195,23 +196,51 @@ function getTodayDateInputValue() {
   return `${year}-${month}-${day}`;
 }
 
-export function EntryEditor({ entry, onSave, onCancel }: EntryEditorProps) {
+export function EntryEditor({ entry, workspaceOptions, onSave, onCancel }: EntryEditorProps) {
   const [date, setDate] = useState(entry?.date ?? getTodayDateInputValue());
   const [title, setTitle] = useState(entry?.title ?? "");
   const [detail, setDetail] = useState(entry?.detail ?? "");
   const [kind, setKind] = useState<TimelineEntry["kind"]>(entry?.kind ?? "learned");
+  const [workspaceSelection, setWorkspaceSelection] = useState(entry?.workspaceName ?? "");
+  const [customWorkspaceName, setCustomWorkspaceName] = useState("");
+  const [workspaceError, setWorkspaceError] = useState("");
   const [tags, setTags] = useState(entry?.tags.join(", ") ?? "");
   const [featured, setFeatured] = useState(entry?.featured ?? false);
+  const workspaceOptionsForKind = workspaceOptions.filter((option) => option.kind === kind);
+  const isCustomWorkspace = workspaceSelection === "__new__";
+  const resolvedWorkspaceName = (isCustomWorkspace ? customWorkspaceName : workspaceSelection).trim();
+
+  function handleKindChange(nextKind: TimelineEntry["kind"]) {
+    setKind(nextKind);
+    setWorkspaceError("");
+    if (!isWorkspaceKind(nextKind)) {
+      setWorkspaceSelection("");
+      setCustomWorkspaceName("");
+      return;
+    }
+
+    if (entry?.kind === nextKind && entry.workspaceName) {
+      setWorkspaceSelection(entry.workspaceName);
+    } else {
+      setWorkspaceSelection("");
+      setCustomWorkspaceName("");
+    }
+  }
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!detail.trim()) return;
+    if (isWorkspaceKind(kind) && !resolvedWorkspaceName) {
+      setWorkspaceError(`Choose an existing ${formatWorkspaceKind(kind).toLocaleLowerCase()} or enter a new name.`);
+      return;
+    }
     onSave({
       id: entry?.id ?? `entry-${Date.now()}`,
       date,
       title,
       detail,
       kind,
+      workspaceName: isWorkspaceKind(kind) ? resolvedWorkspaceName : undefined,
       tags: splitTags(tags),
       featured,
     });
@@ -226,13 +255,43 @@ export function EntryEditor({ entry, onSave, onCancel }: EntryEditorProps) {
         </label>
         <label>
           <span>Type</span>
-          <select value={kind} onChange={(event) => setKind(event.target.value as TimelineEntry["kind"])}>
+          <select value={kind} onChange={(event) => handleKindChange(event.target.value as TimelineEntry["kind"])}>
             <option value="learned">Learned</option>
             <option value="built">Built</option>
             <option value="reflection">Reflection</option>
+            <option value="project">Project</option>
+            <option value="work">Work</option>
           </select>
         </label>
       </div>
+      {isWorkspaceKind(kind) && (
+        <label>
+          <span>{formatWorkspaceKind(kind)} workspace</span>
+          <select
+            value={workspaceSelection}
+            onChange={(event) => {
+              setWorkspaceSelection(event.target.value);
+              if (event.target.value !== "__new__") setCustomWorkspaceName("");
+              setWorkspaceError("");
+            }}
+            required={!isCustomWorkspace}
+          >
+            <option value="">Choose an existing {formatWorkspaceKind(kind).toLocaleLowerCase()}...</option>
+            {workspaceOptionsForKind.map((option) => <option key={`${option.kind}:${option.name}`} value={option.name}>{option.name}</option>)}
+            <option value="__new__">+ Create a new {formatWorkspaceKind(kind).toLocaleLowerCase()}...</option>
+          </select>
+          {isCustomWorkspace && (
+            <Input
+              value={customWorkspaceName}
+              onChange={(event) => { setCustomWorkspaceName(event.target.value); setWorkspaceError(""); }}
+              placeholder={kind === "project" ? "Project name" : "Company name"}
+              required
+              autoFocus
+            />
+          )}
+          {workspaceError && <span className="form-error" role="alert">{workspaceError}</span>}
+        </label>
+      )}
       <label>
         <span>Note title</span>
         <Input value={title} onChange={(event) => setTitle(event.target.value)} required />

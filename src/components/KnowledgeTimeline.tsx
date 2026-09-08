@@ -3,12 +3,14 @@ import { AnimatePresence, LayoutGroup, motion, useScroll, useSpring } from "moti
 import {
   ArrowUpRight,
   BookOpen,
+  BriefcaseBusiness,
   CalendarDays,
   Check,
   ChevronDown,
   CircleDot,
   Code2,
   Flame,
+  FolderKanban,
   GitBranch,
   Pencil,
   Plus,
@@ -18,13 +20,14 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { EntryEditor, NodeEditor } from "@/components/JourneyForms";
-import { formatEntryDate, formatMonthLabel, sortEntriesByDate, sortTimelineNodes, type JourneyNode, type MajorNode, type MonthNode, type TimelineEntry } from "@/data/journey";
+import { formatEntryDate, formatEntryKind, formatMonthLabel, sortEntriesByDate, sortTimelineNodes, type JourneyNode, type MajorNode, type MonthNode, type TimelineEntry, type WorkspaceOption } from "@/data/journey";
 import { cn } from "@/lib/utils";
 import { parseRichTextDetail } from "@/lib/rich-text";
 
 type KnowledgeTimelineProps = {
   nodes: JourneyNode[];
   editable?: boolean;
+  workspaceOptions: WorkspaceOption[];
   onUpdateNode: (id: string, patch: Partial<JourneyNode>) => void;
   onDeleteNode: (node: JourneyNode) => void;
   onAddEntry: (nodeId: string, entry: TimelineEntry) => void;
@@ -35,6 +38,7 @@ type KnowledgeTimelineProps = {
 export function KnowledgeTimeline({
   nodes,
   editable = false,
+  workspaceOptions,
   onUpdateNode,
   onDeleteNode,
   onAddEntry,
@@ -66,6 +70,7 @@ export function KnowledgeTimeline({
                 node={node}
                 index={index}
                 editable={editable}
+                workspaceOptions={workspaceOptions}
                 onUpdateNode={onUpdateNode}
                 onDeleteNode={onDeleteNode}
                 onAddEntry={onAddEntry}
@@ -78,6 +83,7 @@ export function KnowledgeTimeline({
                 node={node}
                 index={index}
                 editable={editable}
+                workspaceOptions={workspaceOptions}
                 onUpdateNode={onUpdateNode}
                 onDeleteNode={onDeleteNode}
               />
@@ -92,6 +98,7 @@ export function KnowledgeTimeline({
 type BaseNodeProps = {
   index: number;
   editable: boolean;
+  workspaceOptions: WorkspaceOption[];
   onUpdateNode: KnowledgeTimelineProps["onUpdateNode"];
   onDeleteNode: KnowledgeTimelineProps["onDeleteNode"];
 };
@@ -100,6 +107,7 @@ function MonthNodeCard({
   node,
   index,
   editable,
+  workspaceOptions,
   onUpdateNode,
   onDeleteNode,
   onAddEntry,
@@ -158,7 +166,7 @@ function MonthNodeCard({
                 <AnimatePresence initial={false} mode="wait">
                   {addingEntry ? (
                     <motion.div key="add-entry-editor" initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.2 }} className="editor-wrap editor-wrap--entry editor-wrap--entry-top">
-                      <EntryEditor onSave={(entry) => { onAddEntry(node.id, entry); setAddingEntry(false); }} onCancel={() => setAddingEntry(false)} />
+                      <EntryEditor workspaceOptions={workspaceOptions} onSave={(entry) => { onAddEntry(node.id, entry); setAddingEntry(false); }} onCancel={() => setAddingEntry(false)} />
                     </motion.div>
                   ) : (
                     <motion.button key="add-entry-trigger" initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -5 }} transition={{ duration: 0.18 }} type="button" className="add-entry-button add-entry-button--top" onClick={() => setAddingEntry(true)}>
@@ -174,6 +182,7 @@ function MonthNodeCard({
                     key={entry.id}
                     entry={entry}
                     editable={editable}
+                    workspaceOptions={workspaceOptions}
                     editing={editingEntryId === entry.id}
                     onEdit={() => setEditingEntryId(entry.id)}
                     onDelete={() => onDeleteEntry(node.id, entry.id)}
@@ -257,6 +266,7 @@ function EditorActions({ onEdit, onDelete }: { onEdit: () => void; onDelete: () 
 export type EntryCardProps = {
   entry: TimelineEntry;
   editable: boolean;
+  workspaceOptions: WorkspaceOption[];
   editing: boolean;
   onEdit: () => void;
   onDelete: () => void;
@@ -264,8 +274,8 @@ export type EntryCardProps = {
   onCancel: () => void;
 };
 
-export function EntryCard({ entry, editable, editing, onEdit, onDelete, onSave, onCancel }: EntryCardProps) {
-  const Icon = entry.kind === "built" ? Code2 : entry.kind === "reflection" ? GitBranch : BookOpen;
+export function EntryCard({ entry, editable, workspaceOptions, editing, onEdit, onDelete, onSave, onCancel }: EntryCardProps) {
+  const Icon = entry.kind === "built" ? Code2 : entry.kind === "reflection" ? GitBranch : entry.kind === "project" ? FolderKanban : entry.kind === "work" ? BriefcaseBusiness : BookOpen;
   const descriptionRef = useRef<HTMLDivElement>(null);
   const [descriptionExpanded, setDescriptionExpanded] = useState(false);
   const [descriptionCanExpand, setDescriptionCanExpand] = useState(false);
@@ -296,7 +306,7 @@ export function EntryCard({ entry, editable, editing, onEdit, onDelete, onSave, 
         {entry.featured && <><span className="highlight-flame highlight-flame--halo" aria-hidden="true" /><span className="highlight-flame highlight-flame--licks" aria-hidden="true" /></>}
         <div className={cn("entry-icon", `entry-icon--${entry.kind}`)}><Icon size={15} /></div>
         <div className="entry-copy">
-          <div className="entry-topline"><span className="entry-date">{formatEntryDate(entry.date)}</span><span className="entry-kind">{entry.kind}</span>{entry.featured && <span className="entry-featured-badge"><Flame size={11} /> Highlight</span>}</div>
+          <div className="entry-topline"><span className="entry-date">{formatEntryDate(entry.date)}</span><span className="entry-kind">{formatEntryKind(entry.kind)}</span>{entry.workspaceName && <span className="entry-workspace-label">{entry.workspaceName}</span>}{entry.featured && <span className="entry-featured-badge"><Flame size={11} /> Highlight</span>}</div>
           <h3>{entry.title}</h3>
           <div ref={descriptionRef} className={cn("entry-description", !descriptionExpanded && "entry-description--collapsed")}>
             {parseRichTextDetail(entry.detail).map((segment, index) =>
@@ -325,7 +335,7 @@ export function EntryCard({ entry, editable, editing, onEdit, onDelete, onSave, 
         <ArrowUpRight className="entry-arrow" size={16} />
       </div>
       <AnimatePresence initial={false}>
-        {editing && <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} className="editor-wrap editor-wrap--entry"><EntryEditor entry={entry} onSave={onSave} onCancel={onCancel} /></motion.div>}
+        {editing && <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} className="editor-wrap editor-wrap--entry"><EntryEditor entry={entry} workspaceOptions={workspaceOptions} onSave={onSave} onCancel={onCancel} /></motion.div>}
       </AnimatePresence>
     </motion.div>
   );

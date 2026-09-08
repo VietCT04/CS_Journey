@@ -6,8 +6,9 @@ import { SidebarProvider } from "@/components/ui/sidebar";
 import { KnowledgeSidebar } from "@/components/KnowledgeSidebar";
 import { KnowledgeTimeline } from "@/components/KnowledgeTimeline";
 import { HighlightsWorkspace } from "@/components/HighlightsWorkspace";
+import { ContextWorkspace } from "@/components/ContextWorkspace";
 import { cn, createId } from "@/lib/utils";
-import { getFeaturedEntries, initialJourney, type JourneyData, type JourneyNode, type TimelineEntry } from "@/data/journey";
+import { formatWorkspaceKind, getFeaturedEntries, getWorkspaceOptions, getWorkspacePath, initialJourney, parseWorkspacePath, type JourneyData, type JourneyNode, type TimelineEntry } from "@/data/journey";
 
 export default function App() {
   const [path, setPath] = useState(window.location.pathname);
@@ -16,7 +17,9 @@ export default function App() {
   const [dataStatus, setDataStatus] = useState<"loading" | "ready" | "error">("loading");
   const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "saved" | "error">("idle");
   const isAdmin = import.meta.env.DEV && path.startsWith("/admin");
-  const isHighlights = path.includes("/highlights");
+  const isHighlights = path === "/highlights" || path === "/admin/highlights";
+  const workspace = useMemo(() => parseWorkspacePath(path), [path]);
+  const isWorkspace = workspace !== null;
 
   useEffect(() => {
     const onPopState = () => setPath(window.location.pathname);
@@ -48,6 +51,7 @@ export default function App() {
 
   const entryCount = useMemo(() => journey.nodes.reduce((total, node) => total + (node.kind === "month" ? node.entries.length : 0), 0), [journey.nodes]);
   const highlightCount = useMemo(() => getFeaturedEntries(journey.nodes).length, [journey.nodes]);
+  const workspaceOptions = useMemo(() => getWorkspaceOptions(journey.nodes), [journey.nodes]);
 
   function navigate(to: string) {
     window.history.pushState({}, "", to);
@@ -106,13 +110,13 @@ export default function App() {
   return (
     <SidebarProvider open={mobileNavOpen} onOpenChange={setMobileNavOpen}>
       <div className="site-shell">
-        <KnowledgeSidebar path={path} editable={isAdmin} nodeCount={journey.nodes.length} entryCount={entryCount} highlightCount={highlightCount} />
+        <KnowledgeSidebar path={path} editable={isAdmin} nodeCount={journey.nodes.length} entryCount={entryCount} highlightCount={highlightCount} workspaceOptions={workspaceOptions} selectedWorkspace={workspace} />
         {mobileNavOpen && <button className="mobile-backdrop" aria-label="Close navigation" onClick={() => setMobileNavOpen(false)} />}
         <main className="main-pane">
           <header className="topbar">
             <div className="topbar-left">
               <Button size="icon" variant="ghost" className="mobile-menu-button" onClick={() => setMobileNavOpen(true)} aria-label="Open navigation"><Menu size={18} /></Button>
-              <span className="topbar-route">/ {isHighlights ? "highlights" : isAdmin ? "admin" : "knowledge"}</span><span className="topbar-separator">/</span><span className="topbar-muted">timeline</span>
+              <span className="topbar-route">/ {workspace ? `${workspace.kind}/${workspace.name}` : isHighlights ? "highlights" : isAdmin ? "admin" : "knowledge"}</span><span className="topbar-separator">/</span><span className="topbar-muted">timeline</span>
             </div>
             <div className="topbar-right"><span className="sync-state"><Radio size={13} /> {isAdmin ? "local changes on" : "read-only"}</span><span className="topbar-date">03 SEP 2026</span></div>
           </header>
@@ -133,13 +137,13 @@ export default function App() {
               </div>
             </section>
 
-            <section className={cn("journey-intro-bar", isHighlights && "journey-intro-bar--highlights")}><div><span className="section-kicker">{isHighlights ? "02 / Highlights" : "01 / The journey"}</span><h2>{isHighlights ? "Notes worth returning to." : "Small notes. Bigger patterns."}</h2></div><p>{isHighlights ? "A focused shelf of the entries that still have a little heat in them." : "Scroll through the chapters. Open a month to see what made it into the notebook."}</p></section>
+            <section className={cn("journey-intro-bar", isHighlights && "journey-intro-bar--highlights", isWorkspace && "journey-intro-bar--workspace")}><div><span className="section-kicker">{isHighlights ? "02 / Highlights" : workspace ? `03 / ${formatWorkspaceKind(workspace.kind)} workspace` : "01 / The journey"}</span><h2>{isHighlights ? "Notes worth returning to." : workspace ? workspace.name : "Small notes. Bigger patterns."}</h2></div><p>{isHighlights ? "A focused shelf of the entries that still have a little heat in them." : workspace ? `A focused record of every event connected to this ${formatWorkspaceKind(workspace.kind).toLocaleLowerCase()}.` : "Scroll through the chapters. Open a month to see what made it into the notebook."}</p></section>
 
-            {isAdmin && <section className="admin-toolbar" aria-label="Timeline editor controls"><div className="admin-toolbar-copy"><span className="admin-icon"><FileJson size={16} /></span><div><strong>Local editor</strong><span>Save writes public-data.json and pasted images to public/uploads/.</span></div></div><div className="admin-toolbar-actions">{!isHighlights && <><Button size="sm" variant="secondary" onClick={() => addNode("month")}><Plus size={14} /> Month</Button><Button size="sm" variant="secondary" onClick={() => addNode("major")}><Plus size={14} /> Major milestone</Button></>}<Button size="sm" variant="primary" onClick={saveData} disabled={saveStatus === "saving" || dataStatus === "loading"}>{saveStatus === "saving" ? <LoaderCircle className="animate-spin" size={14} /> : saveStatus === "saved" ? <CheckCircle2 size={14} /> : saveStatus === "error" ? <AlertCircle size={14} /> : <Save size={14} />} {saveStatus === "saving" ? "Saving..." : saveStatus === "saved" ? "Saved to public-data.json" : saveStatus === "error" ? "Retry save" : "Save changes"}</Button></div></section>}
+            {isAdmin && <section className="admin-toolbar" aria-label="Timeline editor controls"><div className="admin-toolbar-copy"><span className="admin-icon"><FileJson size={16} /></span><div><strong>Local editor</strong><span>Save writes public-data.json and pasted images to public/uploads/.</span></div></div><div className="admin-toolbar-actions">{!isHighlights && !isWorkspace && <><Button size="sm" variant="secondary" onClick={() => addNode("month")}><Plus size={14} /> Month</Button><Button size="sm" variant="secondary" onClick={() => addNode("major")}><Plus size={14} /> Major milestone</Button></>}<Button size="sm" variant="primary" onClick={saveData} disabled={saveStatus === "saving" || dataStatus === "loading"}>{saveStatus === "saving" ? <LoaderCircle className="animate-spin" size={14} /> : saveStatus === "saved" ? <CheckCircle2 size={14} /> : saveStatus === "error" ? <AlertCircle size={14} /> : <Save size={14} />} {saveStatus === "saving" ? "Saving..." : saveStatus === "saved" ? "Saved to public-data.json" : saveStatus === "error" ? "Retry save" : "Save changes"}</Button></div></section>}
 
-            {isHighlights ? <HighlightsWorkspace nodes={journey.nodes} editable={isAdmin} onUpdateEntry={updateEntry} onDeleteEntry={deleteEntry} /> : <KnowledgeTimeline nodes={journey.nodes} editable={isAdmin} onUpdateNode={updateNode} onDeleteNode={deleteNode} onAddEntry={addEntry} onUpdateEntry={updateEntry} onDeleteEntry={deleteEntry} />}
+            {isHighlights ? <HighlightsWorkspace nodes={journey.nodes} editable={isAdmin} workspaceOptions={workspaceOptions} onUpdateEntry={updateEntry} onDeleteEntry={deleteEntry} /> : workspace ? <ContextWorkspace nodes={journey.nodes} workspace={workspace} workspaceOptions={workspaceOptions} editable={isAdmin} onUpdateEntry={updateEntry} onDeleteEntry={deleteEntry} /> : <KnowledgeTimeline nodes={journey.nodes} editable={isAdmin} workspaceOptions={workspaceOptions} onUpdateNode={updateNode} onDeleteNode={deleteNode} onAddEntry={addEntry} onUpdateEntry={updateEntry} onDeleteEntry={deleteEntry} />}
 
-            <footer className="page-footer"><div><span className="footer-prompt">keep going</span><span className="footer-slash"> / </span><span>the map is allowed to change</span></div>{isAdmin ? <button className="footer-link" onClick={() => navigate(isHighlights ? "/highlights" : "/knowledge")}><Eye size={14} /> Preview public view</button> : <button className="footer-link" onClick={() => navigate(isHighlights ? "/admin/highlights" : "/admin")}><PanelLeftClose size={14} /> Open local admin</button>}</footer>
+            <footer className="page-footer"><div><span className="footer-prompt">keep going</span><span className="footer-slash"> / </span><span>the map is allowed to change</span></div>{isAdmin ? <button className="footer-link" onClick={() => navigate(isHighlights ? "/highlights" : workspace ? getWorkspacePath(workspace, false) : "/knowledge")}><Eye size={14} /> Preview public view</button> : <button className="footer-link" onClick={() => navigate(isHighlights ? "/admin/highlights" : workspace ? getWorkspacePath(workspace, true) : "/admin")}><PanelLeftClose size={14} /> Open local admin</button>}</footer>
           </div>
         </main>
       </div>

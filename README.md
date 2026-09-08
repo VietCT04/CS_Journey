@@ -15,6 +15,7 @@ Open `/knowledge` for the read-only public view, `/highlights` for featured entr
 
 - All routes render the same timeline and entry card components.
 - `/highlights` collects every featured entry into a focused read-only workspace; `/admin/highlights` provides the same collection with local edit/delete controls.
+- `project` and `work` entry types can be assigned to an existing or new named workspace; each `/project/<name>` or `/work/<name>` route shows only the related events, with matching admin routes under `/admin`.
 - `/admin` adds inline editing, note management, and a Save button that overwrites `public-data.json` through the local Vite server.
 - Entry descriptions support pasted images; Save writes image files to `public/uploads/` and stores their repository-relative paths in `public-data.json`.
 - Entries can be marked as featured in the local editor to use the reusable warm flame highlight card treatment.

@@ -1,4 +1,11 @@
-export type EntryKind = "learned" | "built" | "reflection";
+export type EntryKind = "learned" | "built" | "reflection" | "project" | "work";
+export type WorkspaceKind = Extract<EntryKind, "project" | "work">;
+
+export type WorkspaceOption = {
+  kind: WorkspaceKind;
+  name: string;
+  entryCount: number;
+};
 
 export type TimelineEntry = {
   id: string;
@@ -6,6 +13,7 @@ export type TimelineEntry = {
   title: string;
   detail: string;
   kind: EntryKind;
+  workspaceName?: string;
   tags: string[];
   featured?: boolean;
 };
@@ -16,6 +24,69 @@ export type FeaturedEntry = {
 };
 
 const monthLabels = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+
+export function isWorkspaceKind(kind: EntryKind): kind is WorkspaceKind {
+  return kind === "project" || kind === "work";
+}
+
+export function formatEntryKind(kind: EntryKind) {
+  return kind === "reflection" ? "Reflection" : kind === "learned" ? "Learned" : kind === "built" ? "Built" : kind === "project" ? "Project" : "Work";
+}
+
+export function formatWorkspaceKind(kind: WorkspaceKind) {
+  return kind === "project" ? "Project" : "Work";
+}
+
+export function getWorkspacePath(workspace: Pick<WorkspaceOption, "kind" | "name">, editable: boolean) {
+  return `${editable ? "/admin" : ""}/${workspace.kind}/${encodeURIComponent(workspace.name)}`;
+}
+
+export function parseWorkspacePath(path: string): { kind: WorkspaceKind; name: string } | null {
+  const segments = path.split("/").filter(Boolean);
+  const kindIndex = segments[0] === "admin" ? 1 : 0;
+  const kind = segments[kindIndex];
+  const encodedName = segments[kindIndex + 1];
+
+  if ((!kind || kind !== "project" && kind !== "work") || !encodedName) return null;
+
+  try {
+    return { kind, name: decodeURIComponent(encodedName) };
+  } catch {
+    return null;
+  }
+}
+
+export function getWorkspaceOptions(nodes: JourneyNode[]) {
+  const workspaceMap = new Map<string, WorkspaceOption>();
+
+  for (const node of nodes) {
+    if (node.kind !== "month") continue;
+    for (const entry of node.entries) {
+      if (!isWorkspaceKind(entry.kind) || !entry.workspaceName?.trim()) continue;
+      const name = entry.workspaceName.trim();
+      const key = `${entry.kind}:${name.toLocaleLowerCase()}`;
+      const existing = workspaceMap.get(key);
+      if (existing) {
+        existing.entryCount += 1;
+      } else {
+        workspaceMap.set(key, { kind: entry.kind, name, entryCount: 1 });
+      }
+    }
+  }
+
+  return [...workspaceMap.values()].sort((a, b) => a.kind.localeCompare(b.kind) || a.name.localeCompare(b.name));
+}
+
+export function getWorkspaceEntries(nodes: JourneyNode[], workspace: Pick<WorkspaceOption, "kind" | "name">) {
+  const normalizedName = workspace.name.trim().toLocaleLowerCase();
+
+  return sortTimelineNodes(nodes).flatMap((node) => {
+    if (node.kind !== "month") return [];
+    return sortEntriesByDate(node.entries)
+      .filter((entry) => entry.kind === workspace.kind && entry.workspaceName?.trim().toLocaleLowerCase() === normalizedName)
+      .map((entry) => ({ entry, source: node }));
+  });
+}
 
 export function formatEntryDate(value: string) {
   const [year, month, day] = value.split("-").map(Number);

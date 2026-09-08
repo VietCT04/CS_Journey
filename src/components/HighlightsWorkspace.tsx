@@ -1,16 +1,17 @@
 import { useState } from "react";
 import { Flame } from "lucide-react";
 import { EntryCard } from "@/components/KnowledgeTimeline";
-import { formatMonthLabel, getFeaturedEntries, type JourneyNode, type TimelineEntry } from "@/data/journey";
+import { formatMonthLabel, getFeaturedEntries, type JourneyNode, type TimelineEntry, type WorkspaceOption } from "@/data/journey";
 
 type HighlightsWorkspaceProps = {
   nodes: JourneyNode[];
   editable?: boolean;
+  workspaceOptions: WorkspaceOption[];
   onUpdateEntry: (nodeId: string, entry: TimelineEntry) => void;
   onDeleteEntry: (nodeId: string, entryId: string) => void;
 };
 
-export function HighlightsWorkspace({ nodes, editable = false, onUpdateEntry, onDeleteEntry }: HighlightsWorkspaceProps) {
+export function HighlightsWorkspace({ nodes, editable = false, workspaceOptions, onUpdateEntry, onDeleteEntry }: HighlightsWorkspaceProps) {
   const [editingId, setEditingId] = useState<string | null>(null);
   const highlights = getFeaturedEntries(nodes);
 
@@ -27,6 +28,7 @@ export function HighlightsWorkspace({ nodes, editable = false, onUpdateEntry, on
               <EntryCard
                 entry={entry}
                 editable={editable}
+                workspaceOptions={workspaceOptions}
                 editing={editingId === entry.id}
                 onEdit={() => setEditingId(entry.id)}
                 onDelete={() => onDeleteEntry(source.id, entry.id)}

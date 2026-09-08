@@ -120,7 +120,8 @@
           "date": "2026-09-04",
           "title": "Urgent Production Hotfix and Cross-Team Ownership",
           "detail": "What Happened\nToday I was assigned an urgent production issue that was blocking data from being persisted and reflected in my manager’s manager-level dashboard. My manager trusted me with full ownership of the hotfix, from investigating the root cause and implementing the fix to representing our team while coordinating with QA, DevOps, and other stakeholders to move the PR through the release process.\nWhat made this particularly meaningful was the urgency and level of responsibility. A change would normally take more than two weeks to reach production, but because this issue was blocking important reporting, we had to bring the fix through review, validation, deployment, and production verification within the same day.\nThe technical issue itself involved multiple layers: fixing malformed LLM JSON handling, improving validation and retry behavior, diagnosing an unexpected AI Core OAuth 429 rate-limit problem, and correcting the concurrency model so OAuth tokens could be safely shared and cached across requests. I also had to make sure the solution was clean, well-tested, Sonar-compliant, and safe enough for an expedited production release.\nThe biggest takeaway was not only the technical work, but being trusted to own a high-impact production issue end to end. I had to make decisions quickly, communicate clearly with senior engineers and cross-functional teams, respond to review feedback, and remain accountable for the final production outcome. It gave me a much better understanding of what production ownership looks like when the issue is urgent and visible to senior stakeholders.",
-          "kind": "reflection",
+          "kind": "work",
+          "workspaceName": "SAP",
           "tags": [
             "production",
             "hotfix",
@@ -322,6 +323,16 @@
             "performance",
             "systems-programming"
           ],
+          "featured": false
+        },
+        {
+          "id": "entry-1788832343968",
+          "date": "2026-09-08",
+          "title": "Aether Initial Skeleton and Event Scan Baseline",
+          "detail": "[[image:/uploads/pasted-1bda2786436c.png|Pasted image]]Initialized the first working Aether project skeleton, defined the initial market-event representation, generated one million synthetic events, and established the first sequential traversal performance baseline. The benchmark was compiled with GCC under WSL2 using -O3 and intentionally measured only the event-processing loop, excluding event generation.\nCovered\n- Created the initial Aether repository structure:\n  - core/\n  - network/\n  - market/\n  - bench/\n  - tests/\n  - docs/\n- Defined the initial EventType enum\n- Defined the initial Event structure with:\n  - sequence number\n  - order ID\n  - price\n  - quantity\n  - event type\n- Inspected object layout using sizeof and alignof\n- Confirmed:\n  - sizeof(Event) = 32 bytes\n  - alignof(Event) = 8 bytes\n- Connected struct padding and alignment to cache efficiency\n- Used std::vector<Event> as the first contiguous event-storage representation\n- Reserved storage for 1,000,000 events before generation\n- Generated 1,000,000 synthetic market events\n- Built a sequential event-processing benchmark\n- Used a checksum to prevent the traversal work from being optimized away\n- Separated dataset generation from the timed benchmark region\n- Ran the benchmark five times\n- Recorded sequential scan results between approximately 2.09–2.78 ms\n- Established an average development baseline of approximately:\n  - 2.51 ms for 1,000,000 events\n  - 2.51 ns/event\n  - ~398 million events/second\n- Connected sequential vector traversal to:\n  - spatial locality\n  - cache-line utilization\n  - hardware prefetching\n  - memory bandwidth\n- Established the first Aether benchmark log\n- Treated WSL results as a development baseline rather than a canonical hardware-performance claim\n- Added the convention of keeping benchmark history for future Aether optimizations",
+          "kind": "project",
+          "workspaceName": "Aether",
+          "tags": [],
           "featured": false
         }
       ]

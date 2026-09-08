@@ -1,4 +1,4 @@
-import { BookOpen, ChevronRight, Command, Flame, Settings2, Sparkles } from "lucide-react";
+import { BookOpen, BriefcaseBusiness, ChevronRight, Command, Flame, FolderKanban, Settings2, Sparkles } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -9,6 +9,7 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { Badge } from "@/components/ui/badge";
+import { getWorkspacePath, type WorkspaceKind, type WorkspaceOption } from "@/data/journey";
 
 type KnowledgeSidebarProps = {
   path: string;
@@ -16,10 +17,12 @@ type KnowledgeSidebarProps = {
   nodeCount: number;
   entryCount: number;
   highlightCount: number;
+  workspaceOptions: WorkspaceOption[];
+  selectedWorkspace: { kind: WorkspaceKind; name: string } | null;
 };
 
-export function KnowledgeSidebar({ path, editable, nodeCount, entryCount, highlightCount }: KnowledgeSidebarProps) {
-  const isHighlights = path.includes("/highlights");
+export function KnowledgeSidebar({ path, editable, nodeCount, entryCount, highlightCount, workspaceOptions, selectedWorkspace }: KnowledgeSidebarProps) {
+  const isHighlights = path === "/highlights" || path === "/admin/highlights";
   const knowledgeHref = editable ? "/admin" : "/knowledge";
   const highlightsHref = editable ? "/admin/highlights" : "/highlights";
 
@@ -41,7 +44,7 @@ export function KnowledgeSidebar({ path, editable, nodeCount, entryCount, highli
         <div className="sidebar-section-label">Workspace</div>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton href={knowledgeHref} active={!isHighlights}>
+            <SidebarMenuButton href={knowledgeHref} active={!isHighlights && !selectedWorkspace}>
               <BookOpen size={17} />
               <span>Knowledge</span>
               <ChevronRight className="sidebar-item-chevron" size={14} />
@@ -56,6 +59,29 @@ export function KnowledgeSidebar({ path, editable, nodeCount, entryCount, highli
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
+
+        {workspaceOptions.length > 0 && (
+          <>
+            <div className="sidebar-divider" />
+            <div className="sidebar-section-label">Workspaces</div>
+            <SidebarMenu className="sidebar-workspace-menu">
+              {workspaceOptions.map((workspace) => {
+                const WorkspaceIcon = workspace.kind === "project" ? FolderKanban : BriefcaseBusiness;
+                const active = selectedWorkspace?.kind === workspace.kind && selectedWorkspace.name.toLocaleLowerCase() === workspace.name.toLocaleLowerCase();
+                return (
+                  <SidebarMenuItem key={`${workspace.kind}:${workspace.name}`}>
+                    <SidebarMenuButton href={getWorkspacePath(workspace, editable)} active={active} title={`${workspace.name} workspace`}>
+                      <WorkspaceIcon size={15} />
+                      <span className="sidebar-workspace-kind">{workspace.kind === "project" ? "Project" : "Work"}</span>
+                      <span className="sidebar-workspace-name">{workspace.name}</span>
+                      <span className="sidebar-menu-count">{String(workspace.entryCount).padStart(2, "0")}</span>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                );
+              })}
+            </SidebarMenu>
+          </>
+        )}
 
         <div className="sidebar-divider" />
 
