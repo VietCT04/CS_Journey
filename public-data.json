@@ -332,7 +332,24 @@
           "detail": "[[image:/uploads/pasted-1bda2786436c.png|Pasted image]]Initialized the first working Aether project skeleton, defined the initial market-event representation, generated one million synthetic events, and established the first sequential traversal performance baseline. The benchmark was compiled with GCC under WSL2 using -O3 and intentionally measured only the event-processing loop, excluding event generation.\nCovered\n- Created the initial Aether repository structure:\n  - core/\n  - network/\n  - market/\n  - bench/\n  - tests/\n  - docs/\n- Defined the initial EventType enum\n- Defined the initial Event structure with:\n  - sequence number\n  - order ID\n  - price\n  - quantity\n  - event type\n- Inspected object layout using sizeof and alignof\n- Confirmed:\n  - sizeof(Event) = 32 bytes\n  - alignof(Event) = 8 bytes\n- Connected struct padding and alignment to cache efficiency\n- Used std::vector<Event> as the first contiguous event-storage representation\n- Reserved storage for 1,000,000 events before generation\n- Generated 1,000,000 synthetic market events\n- Built a sequential event-processing benchmark\n- Used a checksum to prevent the traversal work from being optimized away\n- Separated dataset generation from the timed benchmark region\n- Ran the benchmark five times\n- Recorded sequential scan results between approximately 2.09–2.78 ms\n- Established an average development baseline of approximately:\n  - 2.51 ms for 1,000,000 events\n  - 2.51 ns/event\n  - ~398 million events/second\n- Connected sequential vector traversal to:\n  - spatial locality\n  - cache-line utilization\n  - hardware prefetching\n  - memory bandwidth\n- Established the first Aether benchmark log\n- Treated WSL results as a development baseline rather than a canonical hardware-performance claim\n- Added the convention of keeping benchmark history for future Aether optimizations",
           "kind": "project",
           "workspaceName": "Aether",
-          "tags": [],
+          "tags": [
+            "aether",
+            "cpp",
+            "systems-programming",
+            "high-performance",
+            "event-engine",
+            "market-data",
+            "benchmarking",
+            "std-vector",
+            "memory-layout",
+            "alignment",
+            "padding",
+            "cache-locality",
+            "prefetching",
+            "wsl",
+            "gcc",
+            "performance-baseline"
+          ],
           "featured": false
         }
       ]
