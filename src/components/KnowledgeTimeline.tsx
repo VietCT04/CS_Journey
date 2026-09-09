@@ -22,7 +22,7 @@ import { Button } from "@/components/ui/button";
 import { EntryEditor, NodeEditor } from "@/components/JourneyForms";
 import { formatEntryDate, formatEntryKind, formatMonthLabel, sortEntriesByDate, sortTimelineNodes, type JourneyNode, type MajorNode, type MonthNode, type TimelineEntry, type WorkspaceOption } from "@/data/journey";
 import { cn } from "@/lib/utils";
-import { parseRichTextDetail } from "@/lib/rich-text";
+import { parseRichTextBlocks, type RichTextListItem, type RichTextSegment } from "@/lib/rich-text";
 
 type KnowledgeTimelineProps = {
   nodes: JourneyNode[];
@@ -309,13 +309,7 @@ export function EntryCard({ entry, editable, workspaceOptions, editing, onEdit, 
           <div className="entry-topline"><span className="entry-date">{formatEntryDate(entry.date)}</span><span className="entry-kind">{formatEntryKind(entry.kind)}</span>{entry.workspaceName && <span className="entry-workspace-label">{entry.workspaceName}</span>}{entry.featured && <span className="entry-featured-badge"><Flame size={11} /> Highlight</span>}</div>
           <h3>{entry.title}</h3>
           <div ref={descriptionRef} className={cn("entry-description", !descriptionExpanded && "entry-description--collapsed")}>
-            {parseRichTextDetail(entry.detail).map((segment, index) =>
-              segment.type === "image" ? (
-                <img key={`${entry.id}-image-${index}`} src={segment.src} alt={segment.alt} />
-              ) : (
-                <span key={`${entry.id}-text-${index}`}>{segment.value}</span>
-              ),
-            )}
+            <RichTextDetail detail={entry.detail} entryId={entry.id} />
           </div>
           {descriptionCanExpand && (
             <button
@@ -338,5 +332,42 @@ export function EntryCard({ entry, editable, workspaceOptions, editing, onEdit, 
         {editing && <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} className="editor-wrap editor-wrap--entry"><EntryEditor entry={entry} workspaceOptions={workspaceOptions} onSave={onSave} onCancel={onCancel} /></motion.div>}
       </AnimatePresence>
     </motion.div>
+  );
+}
+
+function RichTextDetail({ detail, entryId }: { detail: string; entryId: string }) {
+  return parseRichTextBlocks(detail).map((block, index) =>
+    block.type === "paragraph" ? (
+      <div className="entry-description-paragraph" key={`${entryId}-paragraph-${index}`}>
+        <RichTextContent content={block.content} entryId={entryId} blockIndex={index} />
+      </div>
+    ) : (
+      <RichTextList key={`${entryId}-list-${index}`} items={block.items} entryId={entryId} blockIndex={index} />
+    ),
+  );
+}
+
+function RichTextList({ items, entryId, blockIndex }: { items: RichTextListItem[]; entryId: string; blockIndex: string | number }) {
+  return (
+    <ul className="entry-description-list">
+      {items.map((item, index) => (
+        <li className="entry-description-list-item" key={`${entryId}-list-${blockIndex}-item-${index}`}>
+          <div className="entry-description-list-item-content">
+            <RichTextContent content={item.content} entryId={entryId} blockIndex={`${blockIndex}-${index}`} />
+          </div>
+          {item.children.length > 0 && <RichTextList items={item.children} entryId={entryId} blockIndex={`${blockIndex}-${index}`} />}
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+function RichTextContent({ content, entryId, blockIndex }: { content: RichTextSegment[]; entryId: string; blockIndex: string | number }) {
+  return content.map((segment, index) =>
+    segment.type === "image" ? (
+      <img key={`${entryId}-${blockIndex}-image-${index}`} src={segment.src} alt={segment.alt} />
+    ) : (
+      <span key={`${entryId}-${blockIndex}-text-${index}`}>{segment.value}</span>
+    ),
   );
 }

@@ -351,6 +351,180 @@
             "performance-baseline"
           ],
           "featured": false
+        },
+        {
+          "id": "entry-1788966092486",
+          "date": "2026-09-09",
+          "title": "Ubuntu Dual-Boot & Native Performance Benchmarking Setup",
+          "detail": "Description / What Happened\n\nSet up Ubuntu 26.04.1 LTS as a dual-boot environment alongside Windows to create a native Linux development and benchmarking environment for C++/systems work. Prepared the disk safely, installed Ubuntu on a dedicated ~110 GiB partition, verified the Linux environment, and validated access to Intel hardware performance counters using `perf`.\n\n\nCovered\n\n\n- Decrypted BitLocker-protected Windows volumes before repartitioning.\n- Recreated the secondary Windows partition and reserved ~110 GiB for Ubuntu.\n- Created a UEFI/GPT Ubuntu installation USB using Rufus.\n- Installed Ubuntu with manual partitioning while preserving Windows and the existing EFI partition.\n- Verified the disk layout using `lsblk` and `parted`.\n- Installed the native C++ toolchain with `build-essential`.\n- Compiled and ran a native C++ benchmark.\n- Configured and tested Linux `perf`.\n- Diagnosed `perf_event_paranoid=4` permission restrictions.\n- Collected software counters including context switches, CPU migrations, and page faults.\n- Collected hardware PMU counters including cycles, instructions, branches, and branch misses.\n- Identified Intel i5-12500H hybrid topology:\n    - CPUs `0–7`: P-core logical CPUs.\n    - CPUs `8–15`: E-cores.\n- Used `taskset` to pin benchmarks to a P-core for more reproducible results.\n- Observed approximately **3.49 IPC** on the pinned benchmark.\n- Established a development workflow using VS Code alongside terminal-based GCC/Clang, CMake, GDB, and `perf`.\n",
+          "kind": "learned",
+          "tags": [],
+          "featured": true
+        },
+        {
+          "id": "entry-1788966429182",
+          "date": "2026-09-09",
+          "title": "std::deque, std::queue, Mutexes, and Condition Variables",
+          "detail": "Description\n\nStudied how `std::deque` is typically organized internally, why `std::queue` is implemented as a container adaptor, and how producer-consumer coordination works with `std::mutex`, `std::unique_lock`, and `std::condition_variable`. Connected these abstractions to cache locality, blocking behavior, synchronization overhead, and critical-section design.\n\nCovered\n\n- Conceptual `std::deque` layout using multiple contiguous blocks\n- Difference between deque and vector memory layout\n- Efficient `push_front()` / `push_back()` behavior in deque\n- Efficient `pop_front()` / `pop_back()` behavior in deque\n- How deque can support `O(1)` indexing through block lookup + offset calculation\n- How repeated `push_front()` can allocate new blocks without shifting all existing elements\n- Why deque usually has weaker locality than vector\n- Extra indirection through deque’s block-pointer structure\n- Sequential traversal trade-offs:\n    - vector: strongest spatial locality\n    - deque: block-local contiguous storage\n    - linked list: pointer chasing\n- `std::queue` as a container adaptor rather than a standalone container\n- Default backing container of `std::queue`: `std::deque`\n- Why vector is not the default backing container for queue\n- FIFO semantics:\n    - push at back\n    - pop from front\n- Why `vector::erase(begin())` is `O(N)`\n- Producer-consumer mental model\n- Busy polling vs blocking wait\n- Purpose of `std::condition_variable`\n- Why condition variables are used together with a mutex\n- Why a waiting consumer must release the mutex\n- `std::unique_lock` vs `std::lock_guard`\n- Why `condition_variable::wait()` requires unlock/relock capability\n- Predicate-based waiting\n- Why a consumer must re-check the condition after wakeup\n- Spurious wakeups\n- Multiple-consumer race where another thread may consume the available work first\n- Why `notify_one()` is often called after releasing the mutex\n- Why notifying while holding the mutex can cause a woken thread to block again immediately\n- `notify_one()` does not imply one context switch per call\n- Wakeup and synchronization overhead\n- Keeping critical sections as small as possible\n- Releasing the queue mutex before doing expensive event processing\n- Allowing producer and consumer work to overlap\n- Reacquiring the mutex before accessing the shared queue again\n- Blocking lock acquisition when another thread currently owns the mutex",
+          "kind": "learned",
+          "tags": [
+            "cpp",
+            "std-deque",
+            "std-queue",
+            "container-adaptor",
+            "mutex",
+            "condition-variable",
+            "unique-lock",
+            "lock-guard",
+            "producer-consumer",
+            "blocking",
+            "synchronization",
+            "spurious-wakeup",
+            "critical-section",
+            "concurrency",
+            "cache-locality",
+            "systems-programming"
+          ],
+          "featured": false
+        },
+        {
+          "id": "entry-1788966544275",
+          "date": "2026-09-09",
+          "title": "Aether Vector vs List Locality Experiment",
+          "detail": "[[image:/uploads/pasted-df91aa2d4ddf.png|Pasted image]]Description\n\nAdded a focused Aether benchmark comparing sequential traversal of `std::vector<Event>` and `std::list<Event>`. The goal was to measure how memory layout affects real execution time even when both traversals are asymptotically `O(N)`.\n\n\nCovered\n\n- Created `bench/vector_vs_list.cpp`\n- Generated the same 1,000,000 synthetic `Event` objects in:\n    - `std::vector<Event>`\n    - `std::list<Event>`\n- Used the same traversal workload for both containers:\n    - `checksum += event.order_id`\n- Compiled with GCC using `O3 -std=c++20`\n- Ran the benchmark five times on Ubuntu bare metal\n- Verified identical checksums for correctness\n- Recorded average traversal time:\n    - `std::vector<Event>`: ~`2.096 ms`\n    - `std::list<Event>`: ~`4.588 ms`\n- Measured `std::list` at approximately `2.19x` slower than `std::vector`\n- Observed relatively low run-to-run variance\n- Connected the result to:\n    - contiguous memory layout\n    - spatial locality\n    - cache-line utilization\n    - hardware prefetching\n    - pointer chasing\n    - dependent memory loads\n    - allocation layout\n    - larger list-node footprint\n    - potential TLB pressure\n- Documented the experiment in `docs/vector_vs_list.md`\n- Established the principle that identical Big-O complexity does not imply similar hardware performance\n- Discussed bottleneck dominance: if per-event CPU computation becomes much more expensive, the relative vector-vs-list gap should shrink\n\n",
+          "kind": "learned",
+          "tags": [
+            "aether",
+            "cpp",
+            "std-vector",
+            "std-list",
+            "linked-list",
+            "cache-locality",
+            "pointer-chasing",
+            "prefetching",
+            "tlb",
+            "memory-layout",
+            "benchmarking",
+            "performance",
+            "systems-programming"
+          ],
+          "featured": false
+        },
+        {
+          "id": "entry-1788966619185",
+          "date": "2026-09-09",
+          "title": "Linked List Internals, Pointer Reasoning, and Locality",
+          "detail": "Description\n\nStudied singly and doubly linked-list internals, implemented a minimal doubly linked list manually, and connected pointer-based data structures to modern CPU behavior. Focused on pointer correctness, object lifetime, edge cases, cache locality, pointer chasing, allocation overhead, TLB pressure, and why contiguous structures often outperform linked lists in real systems.\n\n\nCovered\n\n\n- Singly linked-list structure:\n    - node value\n    - `next` pointer\n    - non-contiguous node placement\n- Doubly linked-list structure:\n    - `prev`\n    - `next`\n    - stored `Event`\n- Traversal through pointer chains\n- Pointer chasing and dependent memory loads\n- Known-position insertion in singly linked lists\n- Why insertion can be `O(1)` only when the relevant node is already known\n- Why erasing a known node in a singly linked list usually requires finding its predecessor\n- Doubly linked-list erase in `O(1)` when `Node*` is already known\n- Forward and backward link consistency\n- Head, tail, middle-node, and single-node erase cases\n- Dangling-pointer risks when links are not updated correctly\n- Heap allocation and explicit `delete`\n- Node lifetime across function calls\n- Difference between:\n    - `Node`\n    - `Node*`\n    - `Node**`\n- Why storing the address of a temporary/local node would create dangling pointers\n- Initializing `head` and `tail` to `nullptr`\n- Constructor initializer lists\n- Copy construction vs default construction followed by assignment\n- Implemented a mini doubly linked list with:\n    - `push_back(const Event&)`\n    - `erase(Node*)`\n- Simplified erase logic using two independent invariants:\n    - update previous side or `head`\n    - update next side or `tail`\n- Current implementation limitation:\n    - no destructor for deleting remaining nodes\n    - no copy/move semantics\n    - intentionally out of scope for the exercise\n- `std::list` conceptual node layout\n- Larger per-element footprint from link pointers\n- Separate-node allocation overhead\n- Memory fragmentation considerations\n- Poorer spatial locality compared with `std::vector`\n- Cache-line utilization differences\n- Hardware prefetching advantages of contiguous traversal\n- Pointer chasing as a dependency chain:\n    - load current node\n    - read `next`\n    - only then know the next address\n- Reduced memory-level parallelism in linked-list traversal\n- TLB fundamentals:\n    - virtual-page to physical-page translation cache\n    - TLB miss vs page fault\n- Why scattered linked-list nodes can increase TLB pressure\n- Translation reuse within contiguous pages\n- TLB working-set size and eviction\n- TLB thrashing when repeatedly cycling through more pages than the TLB can hold\n- Why sequential pages are not automatically fewer TLB misses if every page is touched only once\n- Importance of reuse patterns rather than page order alone\n- Performance reasoning beyond Big-O\n- Why `O(N)` vector traversal can be much faster than `O(N)` list traversal\n- Why `O(1)` list insertion does not automatically make lists preferable\n- Workload frequency as a data-structure selection criterion\n- Reference stability as a genuine linked-list advantage\n- Bottleneck dominance:\n    - memory layout matters most when memory access is dominant\n    - relative vector/list differences shrink when heavy CPU computation dominates",
+          "kind": "learned",
+          "tags": [
+            "cpp",
+            "linked-list",
+            "doubly-linked-list",
+            "pointers",
+            "pointer-chasing",
+            "memory-lifetime",
+            "heap-allocation",
+            "cache-locality",
+            "prefetching",
+            "tlb",
+            "memory-level-parallelism",
+            "data-structures",
+            "performance",
+            "systems-programming"
+          ],
+          "featured": false
+        },
+        {
+          "id": "entry-1788966737155",
+          "date": "2026-09-09",
+          "title": "Binary Heap, std::priority_queue, and Scheduling",
+          "detail": "Description\n\nStudied binary heap internals, implemented a max-heap manually using `std::vector<int>`, and learned how `std::priority_queue` maps workload requirements to heap-based scheduling. Focused on array-based heap representation, sift-up/sift-down invariants, comparator semantics, min-heaps, deterministic tie-breaking, and choosing between heap, sorting, and top-k strategies.\n\n\nCovered\n\n\n- Binary heap as a complete binary tree\n- Array representation of a heap\n- Parent/child index relationships:\n    - `left = 2 * i + 1`\n    - `right = 2 * i + 2`\n    - `parent = (i - 1) / 2`\n- Max-heap invariant:\n    - parent value is greater than or equal to children\n- Heap does not require globally sorted order\n- `top()` complexity: `O(1)`\n- `push()` complexity: `O(log N)`\n- `pop()` complexity: `O(log N)`\n- Heap height: `O(log N)`\n- Push process:\n    - append at end\n    - compare with parent\n    - swap upward\n    - continue until heap invariant is restored\n- Pop process:\n    - save root\n    - move last element to root\n    - `pop_back()`\n    - choose the larger child\n    - sift downward until invariant is restored\n- Why sift-down must swap with the larger child in a max-heap\n- Why `erase(begin())` should not be used for heap root removal\n- Implemented a mini max-heap using `std::vector<int>`\n- Avoided fake sentinel values for missing children\n- Avoided unnecessary bit tricks in index arithmetic\n- Operator-precedence pitfalls in expressions involving shifts\n- Importance of updating the current index after each heap swap\n- Single-element heap edge case\n- `std::priority_queue` as a container adaptor\n- Default underlying storage:\n    - `std::vector<T>`\n- Why vector is well suited for heap storage:\n    - random access\n    - `push_back`\n    - `pop_back`\n    - contiguous layout\n- Default `std::priority_queue` behavior as a max-heap\n- Min-heap construction using a reversed comparator\n- Comparator semantics:\n    - returning `true` means the first element has lower priority\n- Custom scheduling structure using:\n    - timestamp\n    - sequence number\n    - event\n- Deterministic ordering using `(timestamp, seq)`\n- Why equal-priority elements do not have stable ordering by default\n- Encoding tie-breaking explicitly into the comparator\n- Dynamic scheduling:\n    - continuously insert events\n    - repeatedly execute earliest event\n    - heap is a strong fit\n- Static batch processing:\n    - if all events are known upfront\n    - `vector + sort` may be simpler and more cache-friendly\n- Top-k reasoning:\n    - full sort is unnecessary when only a small number of smallest elements are needed\n    - repeated linear scans can be valid when `k` is very small\n    - bounded max-heap of size `k` gives `O(N log k)`\n    - `std::nth_element` as an average `O(N)` top-k alternative\n- Data structure choice based on workload rather than Big-O alone",
+          "kind": "learned",
+          "tags": [
+            "cpp",
+            "binary-heap",
+            "priority-queue",
+            "std-vector",
+            "data-structures",
+            "sift-up",
+            "sift-down",
+            "min-heap",
+            "max-heap",
+            "comparator",
+            "scheduling",
+            "top-k",
+            "cache-locality",
+            "complexity",
+            "systems-programming"
+          ],
+          "featured": false
+        },
+        {
+          "id": "entry-1788966824347",
+          "date": "2026-09-09",
+          "title": "std::map, std::set, and Ordered Data Structures",
+          "detail": "Description\n\nStudied ordered tree-based containers at a conceptual level, focusing on balanced BST behavior, `std::map`, `std::set`, ordered queries, and the hardware cost of pointer-based tree structures. Compared balanced trees with sorted contiguous storage and reasoned about when dynamic ordered updates justify the extra cache and allocation overhead.\n\n\nCovered\n\n\n- Binary Search Tree invariant:\n    - left subtree keys `< node.key`\n    - right subtree keys `> node.key`\n- BST lookup cost as a function of tree height\n- Why a plain BST can degenerate into a linked-list-like structure\n- Degenerate BST lookup degrading from `O(log N)` to `O(N)`\n- Balanced BST goal:\n    - keep height `O(log N)`\n    - preserve `O(log N)` lookup, insertion, and erase\n- `std::map<Key, Value>` as an ordered associative container\n- `std::map` properties:\n    - unique keys\n    - keys maintained in sorted order\n    - `find` — `O(log N)`\n    - `insert` — `O(log N)`\n    - `erase` — `O(log N)`\n- `std::set<T>` as an ordered unique-key container\n- Difference between `map` and `set`:\n    - `map` stores key + associated value\n    - `set` stores only the key\n- Ordered iteration\n- `lower_bound(x)`:\n    - first key `>= x`\n- `upper_bound(x)`:\n    - first key `> x`\n- Minimum and maximum key access\n- Why ordered structures naturally support range and boundary queries\n- Conceptual tree-node layout:\n    - parent pointer\n    - left pointer\n    - right pointer\n    - balancing metadata\n    - key\n    - value\n- Hardware costs of tree-based containers:\n    - pointer chasing\n    - dependent memory loads\n    - branch decisions at each level\n    - separate node allocations\n    - larger per-element footprint\n    - weaker cache locality\n    - potentially higher TLB pressure\n- Comparison with sorted `std::vector`\n- Why sorted vector binary search can outperform `std::map` lookup despite both being `O(log N)`\n- Advantages of sorted vector:\n    - contiguous storage\n    - compact representation\n    - no per-node allocation\n    - better cache-line utilization\n    - smaller working set\n- Binary search still has branch-prediction challenges and non-sequential access\n- Sorted vector update cost:\n    - search position `O(log N)`\n    - insert/erase requires shifting elements\n    - overall `O(N)`\n- `std::map` dynamic-update advantage:\n    - maintains order after every insert/erase\n    - update operations remain `O(log N)`\n- Why trees are useful for workloads with:\n    - frequent inserts\n    - frequent erases\n    - continuous ordered queries\n    - minimum/maximum queries\n    - `lower_bound` / `upper_bound`\n- Why `std::set<Key>` is semantically preferable to `std::map<Key, bool>` for pure membership\n- Data-model correctness before micro-optimization\n- Choosing between tree and contiguous storage based on update frequency vs lookup/traversal performance",
+          "kind": "learned",
+          "tags": [
+            "cpp",
+            "std-map",
+            "std-set",
+            "binary-search-tree",
+            "balanced-tree",
+            "ordered-containers",
+            "lower-bound",
+            "upper-bound",
+            "cache-locality",
+            "pointer-chasing",
+            "tlb",
+            "memory-layout",
+            "data-structures",
+            "performance",
+            "systems-programming"
+          ],
+          "featured": false
+        },
+        {
+          "id": "entry-1788966879428",
+          "date": "2026-09-09",
+          "title": "Hash Tables and std::unordered_map",
+          "detail": "Description\n\nStudied hash-table internals and the performance characteristics of `std::unordered_map`, focusing on exact-key lookup, collision handling, load factor, rehashing, and why average `O(1)` complexity does not automatically imply low or predictable latency.\n\nCovered\n\n- Hash-table mental model:\n    - key\n    - hash function\n    - bucket/index\n    - entry lookup\n- Average lookup complexity: `O(1)`\n- Worst-case lookup complexity: `O(N)`\n- Why poor hash distribution can collapse performance\n- Hash functions and bucket mapping\n- Collision handling at a conceptual level\n- Separate chaining:\n    - multiple entries associated with the same bucket\n    - pointer chasing\n    - separate allocations\n    - weaker cache locality\n- Open addressing:\n    - entries stored directly in a table\n    - probing on collision\n    - better locality potential\n- Linear probing mental model\n- Why open-addressed tables often benefit from contiguous storage\n- Load factor:\n    - `elements / buckets`\n- Why high load factor can increase:\n    - collisions\n    - probe/search length\n    - memory accesses\n    - lookup latency\n- Trade-off between:\n    - lower load factor and more memory\n    - higher load factor and more collision cost\n- `std::unordered_map` API:\n    - `size()`\n    - `bucket_count()`\n    - `load_factor()`\n    - `max_load_factor()`\n    - `reserve()`\n    - `rehash()`\n- Difference between `reserve()` and `rehash()`\n- `reserve(N)` prepares capacity based on expected element count\n- `rehash(N)` directly requests a minimum bucket-count target\n- Rehashing cost:\n    - allocate new bucket structure\n    - redistribute existing entries\n    - `O(N)` work\n- Why pre-reserving can reduce runtime rehash spikes\n- Why predictable-latency systems should care about rehashing\n- Why over-reserving can increase:\n    - memory footprint\n    - cache working set\n    - TLB pressure\n- `max_load_factor()` as a collision/memory trade-off control\n- Why lower load factor can improve average lookup behavior\n- Why it does not guarantee fixed lookup latency\n- Why `std::unordered_map` should not be assumed to use open addressing\n- Why `O(1)` does not mean “one CPU operation”\n- Real hash lookup path can include:\n    - hash computation\n    - random-ish bucket access\n    - cache miss\n    - collision handling\n    - additional memory access\n- Comparison with sorted `std::vector`\n- Why binary search on a small contiguous dataset can outperform a hash table\n- Big-O scaling vs real constant factors\n- Small working-set effects\n- Exact-key lookup as a natural hash-table workload\n- Why frequent `find`, `insert`, and `erase` make hash tables a natural candidate\n- Why sorted order is unnecessary for `order_id → Order`\n- Why Aether should benchmark `std::unordered_map` instead of assuming it is optimal\n- Performance factors to benchmark:\n    - hashing cost\n    - collision behavior\n    - load factor\n    - cache misses\n    - memory layout\n    - allocation behavior\n    - rehash spikes",
+          "kind": "learned",
+          "tags": [
+            "cpp",
+            "hash-table",
+            "std-unordered-map",
+            "hashing",
+            "collision",
+            "separate-chaining",
+            "open-addressing",
+            "load-factor",
+            "rehash",
+            "reserve",
+            "cache-locality",
+            "tlb",
+            "data-structures",
+            "performance",
+            "latency",
+            "systems-programming"
+          ],
+          "featured": false
+        },
+        {
+          "id": "entry-1788966985084",
+          "date": "2026-09-09",
+          "title": "Aether v0.1 Architecture",
+          "detail": "Description\n\nCleaned Aether into a focused systems project and finalized the v0.1 architecture and first real subsystem design.\n\nCovered\n\n- Removed learning-only demos and benchmarks\n- Defined Aether scope and non-goals\n- Finalized canonical `Event`\n- Separated `Event` from persistent `Order` state\n- Designed `OrderBook v0.1`\n- Chose:\n    - `unordered_map` for active-order lookup\n    - ordered `map` for bid/ask levels\n- Defined ADD / CANCEL / TRADE\n- Defined `best_bid()` / `best_ask()`\n- Defined success/failure API contract",
+          "kind": "project",
+          "workspaceName": "Aether",
+          "tags": [
+            "aether",
+            "cpp",
+            "architecture",
+            "order-book",
+            "systems-programming"
+          ],
+          "featured": false
         }
       ]
     }
