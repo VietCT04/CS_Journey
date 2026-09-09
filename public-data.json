@@ -525,6 +525,19 @@
             "systems-programming"
           ],
           "featured": false
+        },
+        {
+          "id": "entry-1788967186557",
+          "date": "2026-09-08",
+          "title": "Training ICPC (2023-2024 ICPC Northwestern European Regional Programming Contest (NWERC 2023) solved 9/12",
+          "detail": "[[image:/uploads/pasted-7b155d00f4b5.png|Pasted image]]",
+          "kind": "learned",
+          "tags": [
+            "cp",
+            "icpc",
+            "c++"
+          ],
+          "featured": false
         }
       ]
     }
