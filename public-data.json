@@ -141,7 +141,7 @@
           "date": "2026-09-05",
           "title": "Concurrency Fundamentals",
           "detail": "[[image:/uploads/pasted-7551e045e5e5.png|Pasted image]]\n\nBuilt a complete mental model of basic concurrency in C++, starting from race conditions and critical sections, then moving through mutexes, atomics, CAS, contention, and deadlocks. Explored why ordinary x++ is unsafe across threads, how atomic read-modify-write operations differ, how CAS retry loops work, and how contention affects synchronization. Finished with a practical benchmark comparing a plain counter, a mutex-protected counter, and an atomic counter.\nCovered\n- Race conditions and data races\n- Critical sections\n- Why ordinary x++ is conceptually load → add → store\n- Lost updates caused by thread interleaving\n- std::mutex\n- Mutex ownership, blocking, and waiting\n- std::lock_guard and RAII-based unlocking\n- Atomic operations and std::atomic\n- Atomic read-modify-write operations\n- Difference between mutex synchronization and atomic operations\n- Atomicity vs thread preemption/context switching\n- Hardware implementations of atomic operations\n- Load-exclusive / store-exclusive\n- Exclusive reservations and retry loops\n- Compare-And-Swap / Compare-Exchange (CAS)\n- expected and desired semantics in CAS\n- CAS failure and retry behavior\n- compare_exchange_weak vs compare_exchange_strong\n- Spurious failure\n- Why weak CAS is useful inside retry loops\n- Contention on shared atomic variables\n- CAS retries under high contention\n- Deadlock and circular wait\n- Consistent lock ordering as a deadlock-avoidance technique\n- Counter experiment with 8 threads:\n  - Plain int: incorrect result due to data race\n  - mutex + int: correct result through serialized critical sections\n  - atomic<int>: correct result through atomic increments\n- Why benchmark results do not imply that atomics are universally faster than mutexes\n- Importance of considering contention when evaluating synchronization performance",
-          "kind": "built",
+          "kind": "learned",
           "tags": [
             "concurrency",
             "multithreading",
@@ -595,7 +595,7 @@
           "id": "entry-1789035598291",
           "date": "2026-09-10",
           "title": "Aether OrderBook v0.1 Benchmark",
-          "detail": "Description\n\nEstablished the first reproducible canonical performance baseline for the real Aether `OrderBook` subsystem.\n\nCovered\n\n- Added canonical `OrderBook::apply()` hot-path entry point\n- Built a fixed-seed 10M-event workload:\n    - 50% ADD\n    - 30% TRADE\n    - 20% CANCEL\n- Generated input outside the timed region\n- Used `O3 -DNDEBUG`\n- Ran 1 warm-up + 5 measured runs\n- Pinned benchmark to CPU 2 on a P-core to reduce scheduler/core-migration noise\n- Recorded:\n    - median: `104.349 ns/event`\n    - mean: `104.162 ns/event`\n    - range: `103.325–104.967 ns/event`\n    - median throughput: `~9.58M events/s`\n- Collected supplementary `perf stat` counters\n- Confirmed CPU pinning eliminated E-core migration\n- Documented the baseline in `docs/performance.md`\n- Kept this as an unoptimized v0.1 baseline for future comparisons",
+          "detail": "[[image:/uploads/pasted-56bb194a1231.png|Pasted image]]\n\nDescription\n\nEstablished the first reproducible canonical performance baseline for the real Aether `OrderBook` subsystem.\n\nCovered\n\n- Added canonical `OrderBook::apply()` hot-path entry point\n- Built a fixed-seed 10M-event workload:\n    - 50% ADD\n    - 30% TRADE\n    - 20% CANCEL\n- Generated input outside the timed region\n- Used `O3 -DNDEBUG`\n- Ran 1 warm-up + 5 measured runs\n- Pinned benchmark to CPU 2 on a P-core to reduce scheduler/core-migration noise\n- Recorded:\n    - median: `104.349 ns/event`\n    - mean: `104.162 ns/event`\n    - range: `103.325–104.967 ns/event`\n    - median throughput: `~9.58M events/s`\n- Collected supplementary `perf stat` counters\n- Confirmed CPU pinning eliminated E-core migration\n- Documented the baseline in `docs/performance.md`\n- Kept this as an unoptimized v0.1 baseline for future comparisons",
           "kind": "project",
           "workspaceName": "Aether",
           "tags": [
@@ -608,6 +608,25 @@
             "throughput",
             "cpu-pinning",
             "performance",
+            "systems-programming"
+          ],
+          "featured": true
+        },
+        {
+          "id": "entry-1789045267481",
+          "date": "2026-09-10",
+          "title": "Linux Non-blocking I/O + epoll",
+          "detail": "Description\n\nStudied how Linux handles many socket connections efficiently using non-blocking I/O and `epoll`, preparing for Aether’s future network-ingress path.\n\n\nCovered\n\n\n- Reviewed blocking `recv()` and thread-per-connection limitations\n- Learned `O_NONBLOCK` and `EAGAIN` / `EWOULDBLOCK`\n- Understood why naive non-blocking loops become busy polling\n- Compared `select` / `poll` with `epoll`\n- Learned:\n    - `epoll_create1()`\n    - `epoll_ctl()`\n    - `epoll_wait()`\n- Covered `EPOLLIN`, `EPOLLOUT`, `EPOLLERR`, `EPOLLHUP`\n- Understood level-triggered behavior\n- Understood why `epoll` and `O_NONBLOCK` solve different problems\n- Learned how `epoll` works conceptually under the hood:\n    - fd registration\n    - kernel readiness callbacks\n    - ready list\n    - waking `epoll_wait()`\n- Reviewed `recv()` outcomes:\n    - `> 0` data\n    - `0` peer closed\n    - `EAGAIN` nothing available now\n- Covered the `EPOLLOUT` subscription trap\n- Reinforced that TCP is a byte stream and `epoll` does not provide message boundaries",
+          "kind": "learned",
+          "tags": [
+            "linux",
+            "cpp",
+            "networking",
+            "epoll",
+            "non-blocking-io",
+            "tcp",
+            "sockets",
+            "event-loop",
             "systems-programming"
           ],
           "featured": false
