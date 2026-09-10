@@ -544,7 +544,8 @@
           "date": "2026-09-10",
           "title": "Implement OrderBook v0.1",
           "detail": "Description\n\nImplemented the first real Aether subsystem: a correct in-memory OrderBook using standard-library containers, with no optimization or benchmarking yet.\n\nCovered\n- Added OrderBook with persistent Order state\n- Used unordered_map for order_id → Order\n- Used ordered maps for bid/ask price levels\n- Implemented ADD, including duplicate and zero-quantity validation\n- Implemented CANCEL using stored order state as source of truth\n- Implemented partial and full TRADE\n- Maintained aggregate quantity per price level\n- Removed empty price levels and fully traded orders\n- Implemented best_bid() and best_ask() with std::optional\n- Established validate-before-mutation and consistent state-transition rules\n- Confirmed order_book.cpp compiles cleanly with warnings enabled",
-          "kind": "learned",
+          "kind": "project",
+          "workspaceName": "Aether",
           "tags": [
             "aether",
             "cpp",
@@ -567,6 +568,26 @@
             "icpc",
             "cp",
             "c++"
+          ],
+          "featured": false
+        },
+        {
+          "id": "entry-1789033365649",
+          "date": "2026-09-10",
+          "title": "Correctness, Invariants & Tests",
+          "detail": "Description\n\nValidated `OrderBook v0.1` through invariants, black-box tests, and sanitizers before any performance work.\n\n\nCovered\n\n\n- Defined core OrderBook invariants:\n    - active quantity always `> 0`\n    - price-level aggregate matches active orders\n    - zero-quantity levels do not exist\n    - no duplicate active `order_id`\n    - `best_bid` / `best_ask` are correct\n- Added tests for:\n    - single/multiple ADD\n    - same-price aggregation\n    - multiple bid/ask levels\n    - CANCEL\n    - partial/full TRADE\n    - duplicate ADD\n    - unknown CANCEL/TRADE\n    - oversized TRADE\n- Verified invalid operations leave state unchanged\n- Replaced risky `operator[]` access in cancel/trade paths with `find()`\n- Confirmed tests pass with `Wall -Wextra -Wpedantic`\n- Confirmed ASan + UBSan clean",
+          "kind": "project",
+          "workspaceName": "Aether",
+          "tags": [
+            "aether",
+            "cpp",
+            "order-book",
+            "invariants",
+            "testing",
+            "correctness",
+            "asan",
+            "ubsan",
+            "systems-programming"
           ],
           "featured": false
         }
