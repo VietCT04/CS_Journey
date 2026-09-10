@@ -538,6 +538,37 @@
             "c++"
           ],
           "featured": false
+        },
+        {
+          "id": "entry-1789026392746",
+          "date": "2026-09-10",
+          "title": "Implement OrderBook v0.1",
+          "detail": "Description\n\nImplemented the first real Aether subsystem: a correct in-memory OrderBook using standard-library containers, with no optimization or benchmarking yet.\n\nCovered\n- Added OrderBook with persistent Order state\n- Used unordered_map for order_id → Order\n- Used ordered maps for bid/ask price levels\n- Implemented ADD, including duplicate and zero-quantity validation\n- Implemented CANCEL using stored order state as source of truth\n- Implemented partial and full TRADE\n- Maintained aggregate quantity per price level\n- Removed empty price levels and fully traded orders\n- Implemented best_bid() and best_ask() with std::optional\n- Established validate-before-mutation and consistent state-transition rules\n- Confirmed order_book.cpp compiles cleanly with warnings enabled",
+          "kind": "learned",
+          "tags": [
+            "aether",
+            "cpp",
+            "order-book",
+            "unordered-map",
+            "std-map",
+            "state-management",
+            "correctness",
+            "systems-programming"
+          ],
+          "featured": false
+        },
+        {
+          "id": "entry-1789026506674",
+          "date": "2026-09-10",
+          "title": "Training ICPC (2023-2024 ICPC Central Europe Regional Contest (CERC 23)) solved 8/12",
+          "detail": "[[image:/uploads/pasted-59a52cbfc329.png|Pasted image]]",
+          "kind": "learned",
+          "tags": [
+            "icpc",
+            "cp",
+            "c++"
+          ],
+          "featured": false
         }
       ]
     }
