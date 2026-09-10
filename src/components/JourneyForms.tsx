@@ -259,6 +259,7 @@ export function EntryEditor({ entry, workspaceOptions, onSave, onCancel }: Entry
             <option value="learned">Learned</option>
             <option value="built">Built</option>
             <option value="reflection">Reflection</option>
+            <option value="icpc">ICPC</option>
             <option value="project">Project</option>
             <option value="work">Work</option>
           </select>

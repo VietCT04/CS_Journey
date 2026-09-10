@@ -1,4 +1,4 @@
-export type EntryKind = "learned" | "built" | "reflection" | "project" | "work";
+export type EntryKind = "learned" | "built" | "reflection" | "project" | "work" | "icpc";
 export type WorkspaceKind = Extract<EntryKind, "project" | "work">;
 
 export type WorkspaceOption = {
@@ -30,7 +30,7 @@ export function isWorkspaceKind(kind: EntryKind): kind is WorkspaceKind {
 }
 
 export function formatEntryKind(kind: EntryKind) {
-  return kind === "reflection" ? "Reflection" : kind === "learned" ? "Learned" : kind === "built" ? "Built" : kind === "project" ? "Project" : "Work";
+  return kind === "reflection" ? "Reflection" : kind === "learned" ? "Learned" : kind === "built" ? "Built" : kind === "project" ? "Project" : kind === "work" ? "Work" : "ICPC";
 }
 
 export function formatWorkspaceKind(kind: WorkspaceKind) {

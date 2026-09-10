@@ -81,7 +81,12 @@ export default function App() {
   }
 
   function updateEntry(nodeId: string, entry: TimelineEntry) {
-    setJourney((current) => ({ ...current, nodes: current.nodes.map((node) => node.id === nodeId && node.kind === "month" ? { ...node, entries: node.entries.map((item) => item.id === entry.id ? entry : item) } : node) }));
+    const nextJourney = {
+      ...journey,
+      nodes: journey.nodes.map((node) => node.id === nodeId && node.kind === "month" ? { ...node, entries: node.entries.map((item) => item.id === entry.id ? entry : item) } : node),
+    };
+    setJourney(nextJourney);
+    void saveData(nextJourney);
   }
 
   function deleteEntry(nodeId: string, entryId: string) {
@@ -89,13 +94,13 @@ export default function App() {
     setJourney((current) => ({ ...current, nodes: current.nodes.map((node) => node.id === nodeId && node.kind === "month" ? { ...node, entries: node.entries.filter((entry) => entry.id !== entryId) } : node) }));
   }
 
-  async function saveData() {
+  async function saveData(journeyToSave: JourneyData = journey) {
     setSaveStatus("saving");
     try {
       const response = await fetch("/api/journey/save", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(journey),
+        body: JSON.stringify(journeyToSave),
       });
       const result = (await response.json().catch(() => null)) as { error?: string; journey?: JourneyData } | null;
       if (!response.ok) throw new Error(result?.error ?? "Could not save public-data.json");
@@ -139,7 +144,7 @@ export default function App() {
 
             <section className={cn("journey-intro-bar", isHighlights && "journey-intro-bar--highlights", isWorkspace && "journey-intro-bar--workspace")}><div><span className="section-kicker">{isHighlights ? "02 / Highlights" : workspace ? `03 / ${formatWorkspaceKind(workspace.kind)} workspace` : "01 / The journey"}</span><h2>{isHighlights ? "Notes worth returning to." : workspace ? workspace.name : "Small notes. Bigger patterns."}</h2></div><p>{isHighlights ? "A focused shelf of the entries that still have a little heat in them." : workspace ? `A focused record of every event connected to this ${formatWorkspaceKind(workspace.kind).toLocaleLowerCase()}.` : "Scroll through the chapters. Open a month to see what made it into the notebook."}</p></section>
 
-            {isAdmin && <section className="admin-toolbar" aria-label="Timeline editor controls"><div className="admin-toolbar-copy"><span className="admin-icon"><FileJson size={16} /></span><div><strong>Local editor</strong><span>Save writes public-data.json and pasted images to public/uploads/.</span></div></div><div className="admin-toolbar-actions">{!isHighlights && !isWorkspace && <><Button size="sm" variant="secondary" onClick={() => addNode("month")}><Plus size={14} /> Month</Button><Button size="sm" variant="secondary" onClick={() => addNode("major")}><Plus size={14} /> Major milestone</Button></>}<Button size="sm" variant="primary" onClick={saveData} disabled={saveStatus === "saving" || dataStatus === "loading"}>{saveStatus === "saving" ? <LoaderCircle className="animate-spin" size={14} /> : saveStatus === "saved" ? <CheckCircle2 size={14} /> : saveStatus === "error" ? <AlertCircle size={14} /> : <Save size={14} />} {saveStatus === "saving" ? "Saving..." : saveStatus === "saved" ? "Saved to public-data.json" : saveStatus === "error" ? "Retry save" : "Save changes"}</Button></div></section>}
+            {isAdmin && <section className="admin-toolbar" aria-label="Timeline editor controls"><div className="admin-toolbar-copy"><span className="admin-icon"><FileJson size={16} /></span><div><strong>Local editor</strong><span>Save writes public-data.json and pasted images to public/uploads/.</span></div></div><div className="admin-toolbar-actions">{!isHighlights && !isWorkspace && <><Button size="sm" variant="secondary" onClick={() => addNode("month")}><Plus size={14} /> Month</Button><Button size="sm" variant="secondary" onClick={() => addNode("major")}><Plus size={14} /> Major milestone</Button></>}<Button size="sm" variant="primary" onClick={() => void saveData()} disabled={saveStatus === "saving" || dataStatus === "loading"}>{saveStatus === "saving" ? <LoaderCircle className="animate-spin" size={14} /> : saveStatus === "saved" ? <CheckCircle2 size={14} /> : saveStatus === "error" ? <AlertCircle size={14} /> : <Save size={14} />} {saveStatus === "saving" ? "Saving..." : saveStatus === "saved" ? "Saved to public-data.json" : saveStatus === "error" ? "Retry save" : "Save changes"}</Button></div></section>}
 
             {isHighlights ? <HighlightsWorkspace nodes={journey.nodes} editable={isAdmin} workspaceOptions={workspaceOptions} onUpdateEntry={updateEntry} onDeleteEntry={deleteEntry} /> : workspace ? <ContextWorkspace nodes={journey.nodes} workspace={workspace} workspaceOptions={workspaceOptions} editable={isAdmin} onUpdateEntry={updateEntry} onDeleteEntry={deleteEntry} /> : <KnowledgeTimeline nodes={journey.nodes} editable={isAdmin} workspaceOptions={workspaceOptions} onUpdateNode={updateNode} onDeleteNode={deleteNode} onAddEntry={addEntry} onUpdateEntry={updateEntry} onDeleteEntry={deleteEntry} />}
 

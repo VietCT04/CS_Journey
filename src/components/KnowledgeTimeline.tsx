@@ -15,6 +15,7 @@ import {
   Pencil,
   Plus,
   Sparkles,
+  Trophy,
   Trash2,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -275,7 +276,7 @@ export type EntryCardProps = {
 };
 
 export function EntryCard({ entry, editable, workspaceOptions, editing, onEdit, onDelete, onSave, onCancel }: EntryCardProps) {
-  const Icon = entry.kind === "built" ? Code2 : entry.kind === "reflection" ? GitBranch : entry.kind === "project" ? FolderKanban : entry.kind === "work" ? BriefcaseBusiness : BookOpen;
+  const Icon = entry.kind === "built" ? Code2 : entry.kind === "reflection" ? GitBranch : entry.kind === "project" ? FolderKanban : entry.kind === "work" ? BriefcaseBusiness : entry.kind === "icpc" ? Trophy : BookOpen;
   const descriptionRef = useRef<HTMLDivElement>(null);
   const [descriptionExpanded, setDescriptionExpanded] = useState(false);
   const [descriptionCanExpand, setDescriptionCanExpand] = useState(false);

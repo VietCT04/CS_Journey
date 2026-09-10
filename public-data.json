@@ -190,7 +190,7 @@
           "date": "2026-09-05",
           "title": "NTU ICPC Training 2023 ICPC Southeastern Europe Regional Contest (The 2nd Universal Cup, Stage 14: Southeastern Europe)",
           "detail": "[[image:/uploads/pasted-11ec5f182dea.png|Pasted image]]\n- Learned Dilworth's theorem\n\n",
-          "kind": "learned",
+          "kind": "icpc",
           "tags": [
             "icpc",
             "cp",
@@ -531,7 +531,7 @@
           "date": "2026-09-08",
           "title": "Training ICPC (2023-2024 ICPC Northwestern European Regional Programming Contest (NWERC 2023) solved 9/12",
           "detail": "[[image:/uploads/pasted-7b155d00f4b5.png|Pasted image]]",
-          "kind": "learned",
+          "kind": "icpc",
           "tags": [
             "cp",
             "icpc",
@@ -563,7 +563,7 @@
           "date": "2026-09-10",
           "title": "Training ICPC (2023-2024 ICPC Central Europe Regional Contest (CERC 23)) solved 8/12",
           "detail": "[[image:/uploads/pasted-59a52cbfc329.png|Pasted image]]",
-          "kind": "learned",
+          "kind": "icpc",
           "tags": [
             "icpc",
             "cp",
@@ -587,6 +587,27 @@
             "correctness",
             "asan",
             "ubsan",
+            "systems-programming"
+          ],
+          "featured": false
+        },
+        {
+          "id": "entry-1789035598291",
+          "date": "2026-09-10",
+          "title": "Aether OrderBook v0.1 Benchmark",
+          "detail": "Description\n\nEstablished the first reproducible canonical performance baseline for the real Aether `OrderBook` subsystem.\n\nCovered\n\n- Added canonical `OrderBook::apply()` hot-path entry point\n- Built a fixed-seed 10M-event workload:\n    - 50% ADD\n    - 30% TRADE\n    - 20% CANCEL\n- Generated input outside the timed region\n- Used `O3 -DNDEBUG`\n- Ran 1 warm-up + 5 measured runs\n- Pinned benchmark to CPU 2 on a P-core to reduce scheduler/core-migration noise\n- Recorded:\n    - median: `104.349 ns/event`\n    - mean: `104.162 ns/event`\n    - range: `103.325–104.967 ns/event`\n    - median throughput: `~9.58M events/s`\n- Collected supplementary `perf stat` counters\n- Confirmed CPU pinning eliminated E-core migration\n- Documented the baseline in `docs/performance.md`\n- Kept this as an unoptimized v0.1 baseline for future comparisons",
+          "kind": "project",
+          "workspaceName": "Aether",
+          "tags": [
+            "aether",
+            "cpp",
+            "order-book",
+            "benchmarking",
+            "perf",
+            "latency",
+            "throughput",
+            "cpu-pinning",
+            "performance",
             "systems-programming"
           ],
           "featured": false
