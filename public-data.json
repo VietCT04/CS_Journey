@@ -630,6 +630,61 @@
             "systems-programming"
           ],
           "featured": false
+        },
+        {
+          "id": "entry-1789056447709",
+          "date": "2026-09-11",
+          "title": "Real epoll Network Ingress",
+          "detail": "[[image:/uploads/pasted-9e646ee2f9b3.png|Pasted image]]\n\nDescription\n\n\nImplemented Aether’s first real non-blocking TCP ingress using Linux `epoll`. The server now owns its listening socket, epoll instance, and connected client sockets with explicit lifecycle management, accepts multiple clients, drains available data without blocking the event loop, and tracks received bytes.\n\nCovered\n\n- `EpollServer` interface, constructor/destructor, RAII, deleted copy operations\n- `explicit` constructor and resource ownership semantics\n- `socket → setsockopt → bind → listen → O_NONBLOCK`\n- Listening socket vs accepted client sockets\n- `SO_REUSEADDR`, `htons`, `htonl`, `INADDR_ANY`\n- `epoll_create1`, `epoll_ctl`, `epoll_wait`\n- Level-triggered readiness and draining until `EAGAIN`\n- Non-blocking `accept()` and `recv()`\n- `EPOLLIN`, `EPOLLERR`, `EPOLLHUP`, `EPOLLRDHUP`\n- Safe client removal and fd reuse\n- Exception cleanup during partially completed construction\n- Atomic `running_` and bounded `epoll_wait` timeout for `stop()`\n- Multi-client testing with `nc`\n- Verified cumulative `bytes_received`",
+          "kind": "project",
+          "workspaceName": "Aether",
+          "tags": [
+            "C++",
+            "Linux",
+            "Networking",
+            "epoll",
+            "Non-blocking I/O",
+            "TCP",
+            "RAII",
+            "File Descriptors",
+            "Systems Programming",
+            "Aether"
+          ],
+          "featured": false
+        },
+        {
+          "id": "entry-1789094247029",
+          "date": "2026-09-11",
+          "title": "Database Storage: From Hardware to Records",
+          "detail": "Description\n\nCovered the physical foundations of a disk-oriented DBMS: how relational data becomes bytes, records, blocks, and files, and why query performance depends heavily on storage layout and I/O behavior rather than CPU speed alone.\n\nCovered\n\n- Memory hierarchy: registers, cache, RAM, disk\n- HDD structure: platter, track, sector, cylinder, read/write head, actuator arm\n- Disk access cost: seek time + rotational delay + transfer time\n- Random vs sequential I/O\n- Block as the unit of disk transfer\n- Data item → field → record → block → file\n- Fixed-length vs variable-length fields and records\n- Record headers and field boundaries\n- Spanned vs unspanned records\n- Physical address vs logical Record ID\n- Block/file organization\n- Record insertion, deletion, deleted slots, and free space\n- Why physical clustering of related records improves range-query performance",
+          "kind": "learned",
+          "tags": [
+            "Database Systems",
+            "Storage",
+            "Disk I/O",
+            "Records",
+            "Blocks",
+            "Physical Layout"
+          ],
+          "featured": false
+        },
+        {
+          "id": "entry-1789096608422",
+          "date": "2026-09-11",
+          "title": "Buffer Pool and Page Management",
+          "detail": "Description\n\nStudied how a DBMS uses the buffer pool to reduce expensive disk I/O, how pages are tracked and replaced in memory, and how techniques such as prefetching and scan sharing improve query execution efficiency.\n\nCovered\n\n- Buffer pool, pages, blocks, and frames\n- Buffer hits and buffer misses\n- Page table and page-to-frame mapping\n- Dirty vs clean pages\n- Prefetching and CPU/I/O overlap\n- Scan sharing across concurrent queries\n- Page eviction and victim selection\n- Least Recently Used (LRU)\n- CLOCK replacement policy and reference bits\n- Sequential flooding\n- Limitations of recency-based replacement\n- Priority hints using query execution context",
+          "kind": "learned",
+          "tags": [
+            "Database Systems",
+            "Buffer Pool",
+            "Page Management",
+            "Caching",
+            "Prefetching",
+            "LRU",
+            "CLOCK",
+            "Page Eviction"
+          ],
+          "featured": false
         }
       ]
     }
