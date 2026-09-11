@@ -729,6 +729,39 @@
             "Aether"
           ],
           "featured": false
+        },
+        {
+          "id": "entry-1789117531773",
+          "date": "2026-09-11",
+          "title": "C++ Build Pipeline & Translation Units",
+          "detail": "### Description\n\nCovered the full C++ build pipeline from source files to the final executable, with emphasis on preprocessing, translation units, separate compilation, object files, linking, and relocation.\n\n### Covered\n\n- Preprocessor and `#include`\n- Translation units\n- Separate compilation\n- `.cpp → .o`\n- Object files and symbols\n- Linker responsibilities\n- Symbol resolution\n- Relocation\n- Compile errors vs link errors\n- Header changes and recompilation\n- `g++` as a compiler driver",
+          "kind": "learned",
+          "tags": [
+            "C++",
+            "Build System",
+            "Compiler",
+            "Linker",
+            "Translation Unit",
+            "Object File"
+          ],
+          "featured": false
+        },
+        {
+          "id": "entry-1789119029718",
+          "date": "2026-09-11",
+          "title": "Declaration, Definition & Symbols",
+          "detail": "### Description\n\nLearned how C++ separates declarations from definitions, how those become symbols in object files, and how headers and forward declarations let translation units share interfaces without sharing implementations.\n\n### Covered\n\n- Declaration vs definition\n- Function and variable declarations\n- Defined vs undefined symbols\n- Symbol tables\n- Name mangling and overload identity\n- Headers as interface contracts\n- Forward declarations\n- Incomplete types\n- Why pointers/references can use incomplete types",
+          "kind": "learned",
+          "tags": [
+            "C++",
+            "Declaration",
+            "Definition",
+            "Symbols",
+            "Name Mangling",
+            "Forward Declaration",
+            "Object Files"
+          ],
+          "featured": false
         }
       ]
     }

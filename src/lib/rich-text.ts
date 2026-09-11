@@ -79,7 +79,7 @@ export function parseRichTextBlocks(detail: string): RichTextBlock[] {
 
 /** Keeps source text intact while removing lightweight entry markers in the read-only view. */
 export function toRichTextDisplayValue(value: string) {
-  return value.replace(/\\#/g, "").replace(/[#`]/g, "");
+  return value.replace(/\\#/g, "").replace(/\*\*/g, "").replace(/[#`]/g, "");
 }
 
 export function detailToEditorHtml(detail: string) {
