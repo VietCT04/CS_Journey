@@ -705,6 +705,30 @@
             "Aether"
           ],
           "featured": false
+        },
+        {
+          "id": "entry-1789108299777",
+          "date": "2026-09-11",
+          "title": "Binary Protocol + Event Decoder",
+          "detail": "Description\n\nDefined and froze Aether’s v0.1 binary wire protocol, then implemented a standalone decoder that converts validated 32-byte network frames into canonical `Event` objects. The protocol is now explicitly separated from the in-memory C++ struct layout.\n\nCovered\n\n- Fixed 32-byte wire protocol with explicit field offsets\n- Big-endian encoding for multi-byte integers\n- Explicit `Side` and `EventType` wire values\n- Reserved-byte validation\n- `std::span<const std::byte>` for non-owning frame views\n- `std::optional<Event>` for decode success/failure\n- Manual big-endian integer decoding with shift/OR\n- Separation of wire format from C++ object layout\n- Event-specific quantity validation\n- Rejection of malformed, truncated, oversized, or invalid frames\n- Unit tests for valid ADD/CANCEL/TRADE and invalid cases\n- ASan + UBSan verification\n- Protocol contract documented in `docs/wire_protocol.md`",
+          "kind": "project",
+          "workspaceName": "Aether",
+          "tags": [
+            "C++",
+            "Binary Protocols",
+            "Serialization",
+            "Deserialization",
+            "TCP",
+            "Endianness",
+            "std::span",
+            "std::optional",
+            "Validation",
+            "ASan",
+            "UBSan",
+            "Systems Programming",
+            "Aether"
+          ],
+          "featured": false
         }
       ]
     }
