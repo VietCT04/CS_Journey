@@ -23,7 +23,7 @@ import { Button } from "@/components/ui/button";
 import { EntryEditor, NodeEditor } from "@/components/JourneyForms";
 import { formatEntryDate, formatEntryKind, formatMonthLabel, sortEntriesByDate, sortTimelineNodes, type JourneyNode, type MajorNode, type MonthNode, type TimelineEntry, type WorkspaceOption } from "@/data/journey";
 import { cn } from "@/lib/utils";
-import { parseRichTextBlocks, type RichTextListItem, type RichTextSegment } from "@/lib/rich-text";
+import { parseRichTextBlocks, toRichTextDisplayValue, type RichTextListItem, type RichTextSegment } from "@/lib/rich-text";
 
 type KnowledgeTimelineProps = {
   nodes: JourneyNode[];
@@ -308,7 +308,7 @@ export function EntryCard({ entry, editable, workspaceOptions, editing, onEdit, 
         <div className={cn("entry-icon", `entry-icon--${entry.kind}`)}><Icon size={15} /></div>
         <div className="entry-copy">
           <div className="entry-topline"><span className="entry-date">{formatEntryDate(entry.date)}</span><span className="entry-kind">{formatEntryKind(entry.kind)}</span>{entry.workspaceName && <span className="entry-workspace-label">{entry.workspaceName}</span>}{entry.featured && <span className="entry-featured-badge"><Flame size={11} /> Highlight</span>}</div>
-          <h3>{entry.title}</h3>
+          <h3>{toRichTextDisplayValue(entry.title)}</h3>
           <div ref={descriptionRef} className={cn("entry-description", !descriptionExpanded && "entry-description--collapsed")}>
             <RichTextDetail detail={entry.detail} entryId={entry.id} />
           </div>
@@ -323,7 +323,7 @@ export function EntryCard({ entry, editable, workspaceOptions, editing, onEdit, 
             </button>
           )}
           <div className="entry-bottomline">
-            <div className="tag-row">{entry.tags.map((tag) => <Badge key={tag}>{tag}</Badge>)}</div>
+            <div className="tag-row">{entry.tags.map((tag) => <Badge key={tag}>{toRichTextDisplayValue(tag)}</Badge>)}</div>
             {editable && <div className="entry-actions"><Button size="sm" variant="ghost" onClick={onEdit}><Pencil size={13} /> Edit</Button><Button size="sm" variant="ghost" onClick={onDelete}><Trash2 size={13} /></Button></div>}
           </div>
         </div>
@@ -368,7 +368,7 @@ function RichTextContent({ content, entryId, blockIndex }: { content: RichTextSe
     segment.type === "image" ? (
       <img key={`${entryId}-${blockIndex}-image-${index}`} src={segment.src} alt={segment.alt} />
     ) : (
-      <span key={`${entryId}-${blockIndex}-text-${index}`}>{segment.value}</span>
+      <span key={`${entryId}-${blockIndex}-text-${index}`}>{toRichTextDisplayValue(segment.value)}</span>
     ),
   );
 }
