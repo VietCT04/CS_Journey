@@ -685,6 +685,26 @@
             "Page Eviction"
           ],
           "featured": false
+        },
+        {
+          "id": "entry-1789098962563",
+          "date": "2026-09-11",
+          "title": "Aether TCP Stream Framing",
+          "detail": "[[image:/uploads/pasted-ddb4e888041d.png|Pasted image]]Description\n\nImplemented per-connection framing for Aether’s TCP ingress. The server now reconstructs fixed-size 32-byte frames correctly from arbitrary TCP byte chunks while preserving incomplete frame data across multiple `recv()` calls.\n\nCovered\n\n- TCP byte-stream semantics vs message boundaries\n- Why `recv()` does not correspond to one logical frame\n- Kernel receive buffer vs persistent userspace framing buffer\n- Per-connection state with `unordered_map<int, Connection>`\n- Persistent `std::vector<std::byte>` receive buffers\n- Append new bytes and extract complete 32-byte frames\n- Retain partial bytes for future `recv()` calls\n- Offset-based parsing with a single prefix erase\n- Connection-state cleanup through RAII\n- Verified:\n    - split frame across multiple `recv()` calls\n    - multiple frames in one `recv()`\n    - complete frames plus retained partial data\n- Confirmed correct reconstruction independent of TCP segmentation/coalescing\n\n",
+          "kind": "project",
+          "workspaceName": "Aether",
+          "tags": [
+            "C++",
+            "TCP",
+            "Networking",
+            "Framing",
+            "Byte Streams",
+            "epoll",
+            "Binary Protocols",
+            "Systems Programming",
+            "Aether"
+          ],
+          "featured": false
         }
       ]
     }
