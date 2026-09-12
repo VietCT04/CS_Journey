@@ -762,6 +762,47 @@
             "Object Files"
           ],
           "featured": false
+        },
+        {
+          "id": "entry-1789136488126",
+          "date": "2026-09-12",
+          "title": "Linkage, Scope & Storage Duration",
+          "detail": "### Description\n\nLearned how scope, linkage, and storage duration describe different properties of C++ names and objects, and how `static` changes meaning depending on where it appears.\n\n### Covered\n\n- Scope vs linkage vs storage duration\n- External, internal, and no linkage\n- Automatic vs static storage duration\n- Global variables already having static storage duration\n- Local `static` preserving object lifetime across calls\n- Namespace-scope `static` creating internal linkage\n- `thread_local` and dynamic storage duration overview\n- Why object lifetime and name visibility are different",
+          "kind": "learned",
+          "tags": [
+            "C++",
+            "Linkage",
+            "Scope",
+            "Storage Duration",
+            "Static",
+            "Lifetime"
+          ],
+          "featured": false
+        },
+        {
+          "id": "entry-1789141403516",
+          "date": "2026-09-12",
+          "title": "Network → Decoder → Production SPSC",
+          "detail": "**Description**\n\nIntegrated Aether’s network ingress with the binary decoder and a production bounded SPSC queue. The network thread now converts TCP frames into validated `Event` objects and publishes them to a single consumer thread without touching `OrderBook`.\n\n**Covered**\n\n- Production `SPSCQueue<Event>` with bounded capacity\n- `Capacity + 1` ring-buffer layout to distinguish full vs empty\n- Release/acquire publication for producer → consumer data visibility\n- Release/acquire synchronization for consumer → producer slot reuse\n- `EventQueue` alias for a single production queue configuration\n- Queue ownership separated from `EpollServer`\n- Network thread as the single producer\n- Worker thread as the single consumer\n- Framing → `decode_event()` → `try_push()` pipeline\n- Explicit temporary backpressure policy using spin/retry\n- No silent event drops on queue-full\n- Worker startup, draining, and `join()` lifecycle\n- Integration test with 1000 binary events\n- Verified `events_decoded == events_enqueued == events_consumed == 1000`\n- Verified `invalid_events == 0`\n- ASan + UBSan passed cleanly\n- Observed TCP coalescing while preserving correct frame/event reconstruction",
+          "kind": "project",
+          "workspaceName": "Aether",
+          "tags": [
+            "C++",
+            "SPSC Queue",
+            "Lock-Free",
+            "Atomics",
+            "Memory Ordering",
+            "Producer Consumer",
+            "TCP",
+            "epoll",
+            "Binary Protocols",
+            "Concurrency",
+            "ASan",
+            "UBSan",
+            "Systems Programming",
+            "Aether"
+          ],
+          "featured": false
         }
       ]
     }
