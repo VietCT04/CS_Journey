@@ -803,6 +803,32 @@
             "Aether"
           ],
           "featured": false
+        },
+        {
+          "id": "entry-1789180483967",
+          "date": "2026-09-12",
+          "title": "Worker → OrderBook + Lifecycle / Backpressure",
+          "detail": "**Description**\n\nCompleted Aether’s end-to-end processing pipeline by connecting the SPSC consumer to `OrderBook::apply()`. The worker now exclusively owns `OrderBook` during runtime, enabling lock-free ownership boundaries and deterministic shutdown.\n\n**Covered**\n\n- Worker-exclusive `OrderBook` ownership\n- Network thread restricted to TCP → framing → decode → SPSC\n- `OrderBook::apply()` integrated into the consumer path\n- Avoided mutexes through single-threaded state ownership\n- Correct shutdown order: stop network → join network → stop worker → drain queue → join worker\n- Safe final `OrderBook` inspection only after worker termination\n- Explicit spin/retry backpressure policy\n- `queue_full_count` interpreted as failed push attempts, not dropped events\n- Integration test with 1000 valid TCP ADD events\n- Verified all 1000 events decoded, enqueued, processed, and accepted\n- Verified final `best_bid == 100`\n- ASan + UBSan passed cleanly",
+          "kind": "project",
+          "workspaceName": "Aether",
+          "tags": [
+            "C++",
+            "Concurrency",
+            "Thread Ownership",
+            "SPSC Queue",
+            "Backpressure",
+            "OrderBook",
+            "TCP",
+            "epoll",
+            "Atomics",
+            "Lifecycle",
+            "Graceful Shutdown",
+            "ASan",
+            "UBSan",
+            "Systems Programming",
+            "Aether"
+          ],
+          "featured": false
         }
       ]
     }
