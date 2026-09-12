@@ -98,6 +98,15 @@ export function formatEntryDate(value: string) {
   return `${String(day).padStart(2, "0")} ${monthLabels[month - 1]}`;
 }
 
+export function formatUpdatedDate(value: string | null) {
+  if (!value) return "—";
+
+  const [year, month, day] = value.split("-").map(Number);
+  if (!year || !month || !day || month < 1 || month > 12) return value;
+
+  return `${String(day).padStart(2, "0")}.${String(month).padStart(2, "0")}.${String(year).slice(-2)}`;
+}
+
 export function formatMonthLabel(value: string) {
   const [year, month] = toMonthInputValue(value).split("-").map(Number);
 
@@ -163,6 +172,23 @@ export function sortEntriesByDate(entries: TimelineEntry[]) {
     .map((entry, index) => ({ entry, index }))
     .sort((a, b) => compareDescendingDate(entrySortValue(a.entry.date), entrySortValue(b.entry.date)) || b.index - a.index)
     .map(({ entry }) => entry);
+}
+
+export function getMostRecentEntryDate(nodes: JourneyNode[]) {
+  let latestDate: string | null = null;
+  let latestValue: number | null = null;
+
+  for (const node of nodes) {
+    if (node.kind !== "month") continue;
+    for (const entry of node.entries) {
+      const value = entrySortValue(entry.date);
+      if (value === null || (latestValue !== null && value <= latestValue)) continue;
+      latestDate = entry.date;
+      latestValue = value;
+    }
+  }
+
+  return latestDate;
 }
 
 export function getFeaturedEntries(nodes: JourneyNode[]): FeaturedEntry[] {

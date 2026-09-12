@@ -8,7 +8,7 @@ import { KnowledgeTimeline } from "@/components/KnowledgeTimeline";
 import { HighlightsWorkspace } from "@/components/HighlightsWorkspace";
 import { ContextWorkspace } from "@/components/ContextWorkspace";
 import { cn, createId } from "@/lib/utils";
-import { formatWorkspaceKind, getFeaturedEntries, getWorkspaceOptions, getWorkspacePath, initialJourney, parseWorkspacePath, type JourneyData, type JourneyNode, type TimelineEntry } from "@/data/journey";
+import { formatUpdatedDate, formatWorkspaceKind, getFeaturedEntries, getMostRecentEntryDate, getWorkspaceOptions, getWorkspacePath, initialJourney, parseWorkspacePath, type JourneyData, type JourneyNode, type TimelineEntry } from "@/data/journey";
 
 export default function App() {
   const [path, setPath] = useState(window.location.pathname);
@@ -51,6 +51,7 @@ export default function App() {
 
   const entryCount = useMemo(() => journey.nodes.reduce((total, node) => total + (node.kind === "month" ? node.entries.length : 0), 0), [journey.nodes]);
   const highlightCount = useMemo(() => getFeaturedEntries(journey.nodes).length, [journey.nodes]);
+  const latestEntryDate = useMemo(() => getMostRecentEntryDate(journey.nodes), [journey.nodes]);
   const workspaceOptions = useMemo(() => getWorkspaceOptions(journey.nodes), [journey.nodes]);
 
   function navigate(to: string) {
@@ -138,7 +139,7 @@ export default function App() {
               </div>
               <div className="hero-footer">
                 <div className="hero-metrics"><div className="metric"><strong>{String(journey.nodes.length).padStart(2, "0")}</strong><span>chapters</span></div><div className="metric"><strong>{String(entryCount).padStart(2, "0")}</strong><span>field notes</span></div><div className="metric"><strong>∞</strong><span>curiosity</span></div></div>
-                <Badge className="version-badge">Updated / 03.09.26</Badge>
+                <Badge className="version-badge">Updated / {formatUpdatedDate(latestEntryDate)}</Badge>
               </div>
             </section>
 
