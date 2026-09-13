@@ -610,7 +610,7 @@
             "performance",
             "systems-programming"
           ],
-          "featured": true
+          "featured": false
         },
         {
           "id": "entry-1789045267481",
@@ -829,6 +829,66 @@
             "Aether"
           ],
           "featured": false
+        },
+        {
+          "id": "entry-1789229150175",
+          "date": "2026-09-13",
+          "title": "End-to-End Correctness + Stress",
+          "detail": "**Description**\n\nValidated Aether’s full TCP-to-OrderBook pipeline under deterministic state transitions, arbitrary framing boundaries, and large event volumes before benchmarking.\n\n**Covered**\n\n- Deterministic ADD / TRADE / CANCEL end-to-end state validation\n- Verified final `best_bid` / `best_ask` correctness\n- Framing stress with arbitrary chunk sizes across frame boundaries\n- Verified multiple frames and partial frames reconstruct correctly\n- Load correctness with 100K and 1M valid events\n- Verified `bytes_received == EVENT_COUNT * FRAME_SIZE`\n- Verified `events_decoded == events_enqueued == events_processed`\n- Verified `invalid_events == 0` and `events_rejected == 0`\n- Confirmed no silent event loss through TCP, decoder, SPSC, worker, or OrderBook\n- Verified shutdown correctness before final state inspection\n- ASan + UBSan passed cleanly under load",
+          "kind": "project",
+          "workspaceName": "Aether",
+          "tags": [
+            "C++",
+            "End-to-End Testing",
+            "Correctness",
+            "Stress Testing",
+            "TCP",
+            "Framing",
+            "Binary Protocols",
+            "SPSC Queue",
+            "OrderBook",
+            "Event Preservation",
+            "Concurrency",
+            "ASan",
+            "UBSan",
+            "Systems Programming",
+            "Aether"
+          ],
+          "featured": false
+        },
+        {
+          "id": "entry-1789229299977",
+          "date": "2026-09-12",
+          "title": "ICPC Training (The 2023 ICPC Asia Taoyuan Regional Programming Contest) solved 12/13 ranked #1",
+          "detail": "[[image:/uploads/pasted-078c977cab3c.png|Pasted image]]",
+          "kind": "icpc",
+          "tags": [
+            "icpc",
+            "cp",
+            "c++"
+          ],
+          "featured": true
+        },
+        {
+          "id": "entry-1789236698191",
+          "date": "2026-09-13",
+          "title": "Canonical End-to-End Performance Baseline V0.1",
+          "detail": "[[image:/uploads/pasted-3a0bd027a011.png|Pasted image]]\n\n**Description**\n\nEstablished Aether’s reproducible end-to-end development baseline for the full `TCP → epoll → framing → decoder → SPSC → worker → OrderBook` pipeline on bare-metal Ubuntu.\n\n**Covered**\n\n- Fixed workload: `1,000,000` events, `32 MB`, seed `42`, `50% ADD / 30% TRADE / 20% CANCEL`.\n- Pinned client/network/worker to CPUs `2/4/6` on separate P-cores; SMT siblings disabled, `performance` governor, turbo disabled.\n- Canonical methodology: `5` independent processes × `5` measured runs, with one warm-up per process.\n- Baseline across 25 runs: **`243.446 ns/event`**, approximately **`4.11M events/s`**.\n- Observed range: `184.395–269.403 ns/event`; significant cross-process variance remains.\n- Verified zero invalid, rejected, or lost events.\n- Added supplementary `perf stat` baseline across 5 processes: **IPC `0.660`**, branch-miss rate `4.94%`, cache misses `13.82M`, context switches `309`, migrations `13`.\n- `ns/event` is amortized throughput cost, not per-event latency; p50/p95/p99 are not measured yet.\n- Temporary deep profiling experiments were reverted; future bottlenecks will be studied incrementally before optimization.",
+          "kind": "learned",
+          "tags": [
+            "C++",
+            "Benchmarking",
+            "Performance Engineering",
+            "TCP",
+            "epoll",
+            "SPSC Queue",
+            "CPU Affinity",
+            "perf",
+            "OrderBook",
+            "Systems Programming",
+            "Aether"
+          ],
+          "featured": true
         }
       ]
     }
